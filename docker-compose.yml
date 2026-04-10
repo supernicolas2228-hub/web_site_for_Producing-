@@ -1,0 +1,19 @@
+# Локальный PostgreSQL для разработки (опционально):
+# docker compose up -d
+# Затем в .env: DATABASE_URL="postgresql://sellislife:sellislife@localhost:5432/sellislife?schema=public"
+
+services:
+  db:
+    image: postgres:16-alpine # как на хостинге (PostgreSQL 16)
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sellislife
+      POSTGRES_PASSWORD: sellislife
+      POSTGRES_DB: sellislife
+    ports:
+      - "5432:5432"
+    volumes:
+      - sellislife_pgdata:/var/lib/postgresql/data
+
+volumes:
+  sellislife_pgdata:

@@ -1,0 +1,33 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { track } from "@/lib/track";
+
+const DEPTHS = [25, 50, 75, 100] as const;
+
+export function TrackingProvider() {
+  const fired = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    void track("page_view");
+
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - window.innerHeight;
+      if (total <= 0) return;
+      const pct = (window.scrollY / total) * 100;
+      for (const d of DEPTHS) {
+        if (pct >= d && !fired.current.has(d)) {
+          fired.current.add(d);
+          void track("scroll_depth", { depth: d });
+        }
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return null;
+}

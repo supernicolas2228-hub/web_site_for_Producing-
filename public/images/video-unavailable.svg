@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="">
+  <defs>
+    <linearGradient id="base" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#281018"/>
+      <stop offset="38%" stop-color="#10080a"/>
+      <stop offset="100%" stop-color="#060304"/>
+    </linearGradient>
+    <radialGradient id="hot" cx="78%" cy="12%" r="55%">
+      <stop offset="0%" stop-color="#8b2028" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#3d0f12" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dim" cx="50%" cy="100%" r="75%">
+      <stop offset="0%" stop-color="#1a0508" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#base)"/>
+  <rect width="1280" height="720" fill="url(#hot)"/>
+  <rect width="1280" height="720" fill="url(#dim)"/>
+  <circle cx="640" cy="360" r="200" fill="none" stroke="#882028" stroke-width="1" opacity="0.22"/>
+  <circle cx="640" cy="360" r="120" fill="none" stroke="#441018" stroke-width="1" opacity="0.35"/>
+</svg>
