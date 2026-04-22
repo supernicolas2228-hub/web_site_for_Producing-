@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { applyThemeClass, setStoredTheme, type Theme } from "@/lib/theme";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -31,12 +31,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       disabled={!ready}
       className={[
         "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition",
-        /* Светлая тема: белая плашка, тёмная иконка, заметная рамка */
-        "border-2 border-zinc-300 bg-white text-zinc-900 shadow-md shadow-zinc-900/10",
-        "hover:border-accent hover:text-accent hover:shadow-lg",
-        /* Тёмная тема: приподнятый тёмный блок, светлая иконка */
-        "dark:border-white/20 dark:bg-black/50 dark:text-white dark:shadow-plate dark:backdrop-blur-xl",
-        "dark:hover:border-accent dark:hover:text-white",
+        "border border-stroke/20 bg-white/55 text-zinc-900 shadow-plate backdrop-blur-xl hover:border-accent/55 hover:text-accent dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-accent/45 dark:hover:text-sky-200",
         "disabled:opacity-40",
         className,
       ].join(" ")}

@@ -7,23 +7,21 @@ import { Button } from "@/components/ui/Button";
 import { track } from "@/lib/track";
 
 export type StarterPackFormPayload = {
-  ageRange: string;
-  role: string;
-  roleOther: string;
-  triedOnline: string;
-  mainBlock: string;
-  moneyHorizon: string;
+  projectStage: string;
+  formatInterest: string;
+  businessModel: string;
+  mainTask: string;
+  timeline: string;
   telegram: string;
   consent: boolean;
 };
 
 const initialForm: StarterPackFormPayload = {
-  ageRange: "",
-  role: "",
-  roleOther: "",
-  triedOnline: "",
-  mainBlock: "",
-  moneyHorizon: "",
+  projectStage: "",
+  formatInterest: "",
+  businessModel: "",
+  mainTask: "",
+  timeline: "",
   telegram: "",
   consent: false,
 };
@@ -98,11 +96,11 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
 
     await track("starter_pack_survey_submit", {
       source,
-      ageRange: form.ageRange,
-      role: form.role,
-      triedOnline: form.triedOnline,
-      mainBlock: form.mainBlock,
-      moneyHorizon: form.moneyHorizon,
+      projectStage: form.projectStage,
+      formatInterest: form.formatInterest,
+      businessModel: form.businessModel,
+      mainTask: form.mainTask,
+      timeline: form.timeline,
       hasTelegram: Boolean(form.telegram.trim()),
     });
 
@@ -123,9 +121,9 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
   };
 
   const field =
-    "mt-1 w-full rounded-xl border border-stroke/25 bg-white/95 px-4 py-3 text-[15px] text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-accent focus:ring-2 focus:ring-accent/25 dark:border-white/15 dark:bg-black/50 dark:text-white dark:placeholder:text-white/35";
+    "mt-1 w-full rounded-2xl border border-stroke/25 bg-white/90 px-4 py-3 text-[15px] text-zinc-900 shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-accent focus:ring-2 focus:ring-accent/25 dark:border-white/10 dark:bg-white/5 dark:text-zinc-100 dark:placeholder:text-white/35";
 
-  const label = "block text-sm font-semibold text-zinc-800 dark:text-white";
+  const label = "block text-sm font-semibold text-zinc-800 dark:text-zinc-100";
 
   return (
     <AnimatePresence>
@@ -146,7 +144,7 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
             role="dialog"
             aria-modal="true"
             aria-labelledby={`${idPrefix}-title`}
-            className="relative w-full max-w-lg rounded-2xl border border-stroke/20 bg-page/95 shadow-[var(--shadow-lift),var(--shadow-plate)] backdrop-blur-xl dark:border-white/12 dark:bg-zinc-950/95"
+            className="relative w-full max-w-lg rounded-[2rem] border border-stroke/20 bg-page/95 shadow-[var(--shadow-lift),var(--shadow-plate)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/95"
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -154,18 +152,22 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
           >
             <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-stroke/15 bg-page/90 px-5 py-4 backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/90 sm:px-6">
               <div>
-                <p className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent">Starter Pack</p>
-                <h2 id={`${idPrefix}-title`} className="mt-1 font-display text-xl uppercase leading-tight text-zinc-900 dark:text-white">
-                  Забрать материалы
+                <p className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent">Заявка</p>
+                <h2
+                  id={`${idPrefix}-title`}
+                  className="mt-1 font-display text-xl uppercase leading-tight text-zinc-900 dark:text-zinc-100"
+                >
+                  Несколько вопросов перед контактом
                 </h2>
-                <p className="mt-1 text-xs leading-relaxed text-zinc-500 dark:text-white">
-                  Короткая анкета на сайте. Отправка на внешний сервис пока отключена; ответы учитываются в статистике и сохраняются в браузере.
+                <p className="mt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                  Это быстрый бриф перед первым контактом. Внешняя отправка пока отключена: ответы сохраняются
+                  локально и попадают в аналитику сайта.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="shrink-0 rounded-full border border-stroke/20 px-2.5 py-1 text-lg leading-none text-zinc-500 transition hover:border-accent/40 hover:text-zinc-900 dark:border-white/15 dark:text-white dark:hover:text-white"
+                className="shrink-0 rounded-full border border-stroke/20 px-2.5 py-1 text-lg leading-none text-zinc-500 transition hover:border-accent/40 hover:text-zinc-900 dark:border-white/10 dark:text-white dark:hover:text-white"
                 aria-label="Закрыть"
               >
                 ×
@@ -175,117 +177,101 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
             {step === "form" ? (
               <form onSubmit={submit} className="space-y-5 px-5 py-6 sm:px-6 sm:py-7">
                 <div>
-                  <label className={label} htmlFor={`${idPrefix}-age`}>
-                    Сколько тебе лет? <span className="text-accent">*</span>
+                  <label className={label} htmlFor={`${idPrefix}-stage`}>
+                    На каком этапе вы сейчас? <span className="text-accent">*</span>
                   </label>
                   <select
-                    id={`${idPrefix}-age`}
+                    id={`${idPrefix}-stage`}
                     required
                     className={field}
-                    value={form.ageRange}
-                    onChange={(e) => set("ageRange", e.target.value)}
+                    value={form.projectStage}
+                    onChange={(e) => set("projectStage", e.target.value)}
                   >
                     <option value="">Выбери вариант</option>
-                    <option value="до 14">до 14</option>
-                    <option value="15–17">15–17</option>
-                    <option value="18–20">18–20</option>
-                    <option value="21–25">21–25</option>
-                    <option value="26+">26 и старше</option>
+                    <option value="Расту в инфобизнесе, много идей и мало фокуса">Расту в инфобизнесе, много идей и мало фокуса</option>
+                    <option value="Нужен разбор одной конкретной задачи">Нужен разбор одной конкретной задачи</option>
+                    <option value="Интересует наставничество на постоянной основе">Интересует наставничество на постоянной основе</option>
+                    <option value="Хочу начать с бесплатного тарифа">Хочу начать с бесплатного тарифа</option>
+                    <option value="Рассматриваю продвинутый платный тариф">Рассматриваю продвинутый платный тариф</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className={label} htmlFor={`${idPrefix}-role`}>
-                    Чем сейчас занимаешься? <span className="text-accent">*</span>
+                  <label className={label} htmlFor={`${idPrefix}-format`}>
+                    Что ближе: разовый разбор или сопровождение? <span className="text-accent">*</span>
                   </label>
                   <select
-                    id={`${idPrefix}-role`}
+                    id={`${idPrefix}-format`}
                     required
                     className={field}
-                    value={form.role}
-                    onChange={(e) => set("role", e.target.value)}
+                    value={form.formatInterest}
+                    onChange={(e) => set("formatInterest", e.target.value)}
                   >
                     <option value="">Выбери вариант</option>
-                    <option value="Школа">Школа</option>
-                    <option value="Колледж / вуз">Колледж / вуз</option>
-                    <option value="Работа по найму">Работа по найму</option>
-                    <option value="Фриланс / самозанятость">Фриланс / самозанятость</option>
-                    <option value="Ищу себя / перерыв">Ищу себя / перерыв</option>
-                    <option value="Другое">Другое</option>
+                    <option value="Консультация">Консультация</option>
+                    <option value="Наставничество">Наставничество</option>
+                    <option value="Бесплатный тариф">Бесплатный тариф</option>
+                    <option value="Продвинутый тариф">Продвинутый тариф</option>
+                    <option value="Нужно помочь выбрать">Нужно помочь выбрать</option>
                   </select>
-                  {form.role === "Другое" ? (
-                    <input
-                      type="text"
-                      className={`${field} mt-2`}
-                      placeholder="Уточни в двух словах"
-                      value={form.roleOther}
-                      onChange={(e) => set("roleOther", e.target.value)}
-                    />
-                  ) : null}
                 </div>
 
                 <div>
-                  <span className={label}>
-                    Уже пробовал зарабатывать онлайн? <span className="text-accent">*</span>
-                  </span>
-                  <div className="mt-2 flex flex-wrap gap-3">
-                    {(["Да, есть опыт", "Чуть-чуть / пробовал", "Нет, только думаю"] as const).map((v) => (
-                      <label
-                        key={v}
-                        className="flex cursor-pointer items-center gap-2 rounded-xl border border-stroke/20 bg-white/70 px-3 py-2 text-sm dark:border-white/12 dark:bg-black/35"
-                      >
-                        <input
-                          type="radio"
-                          name="tried"
-                          required
-                          className="accent-accent"
-                          checked={form.triedOnline === v}
-                          onChange={() => set("triedOnline", v)}
-                        />
-                        {v}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className={label} htmlFor={`${idPrefix}-block`}>
-                    Что сейчас больше всего мешает? <span className="text-accent">*</span>
+                  <label className={label} htmlFor={`${idPrefix}-model`}>
+                    Что вы продаёте или хотите продавать? <span className="text-accent">*</span>
                   </label>
                   <select
-                    id={`${idPrefix}-block`}
+                    id={`${idPrefix}-model`}
                     required
                     className={field}
-                    value={form.mainBlock}
-                    onChange={(e) => set("mainBlock", e.target.value)}
+                    value={form.businessModel}
+                    onChange={(e) => set("businessModel", e.target.value)}
                   >
                     <option value="">Выбери ближайшее</option>
-                    <option value="Хаос и прокрастинация">Хаос и прокрастинация</option>
-                    <option value="Нет чёткой системы">Нет чёткой системы</option>
-                    <option value="Страшно писать людям / продавать">Страшно писать людям / продавать</option>
-                    <option value="Не понимаю, с чего начать">Не понимаю, с чего начать</option>
-                    <option value="Мало времени">Мало времени</option>
-                    <option value="Сливался на обучениях раньше">Сливался на обучениях раньше</option>
-                    <option value="Другое">Другое</option>
+                    <option value="Консультации или экспертные услуги">Консультации или экспертные услуги</option>
+                    <option value="Наставничество или сопровождение">Наставничество или сопровождение</option>
+                    <option value="Авторский продукт или клуб">Авторский продукт или клуб</option>
+                    <option value="Несколько направлений сразу">Несколько направлений сразу</option>
+                    <option value="Пока формирую направление">Пока формирую направление</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className={label} htmlFor={`${idPrefix}-horizon`}>
-                    На какой горизонт хочешь первые деньги? <span className="text-accent">*</span>
+                  <label className={label} htmlFor={`${idPrefix}-task`}>
+                    Какая задача сейчас главная? <span className="text-accent">*</span>
                   </label>
                   <select
-                    id={`${idPrefix}-horizon`}
+                    id={`${idPrefix}-task`}
                     required
                     className={field}
-                    value={form.moneyHorizon}
-                    onChange={(e) => set("moneyHorizon", e.target.value)}
+                    value={form.mainTask}
+                    onChange={(e) => set("mainTask", e.target.value)}
                   >
                     <option value="">Выбери</option>
-                    <option value="Без жёсткого срока">Без жёсткого срока</option>
-                    <option value="В ближайший месяц">В ближайший месяц</option>
-                    <option value="1–3 месяца">1–3 месяца</option>
-                    <option value="Пока только разбираюсь">Пока только разбираюсь</option>
+                    <option value="Разобраться в приоритетах и следующем шаге">Разобраться в приоритетах и следующем шаге</option>
+                    <option value="Снизить перегруз и шум в инфобизнесе">Снизить перегруз и шум в инфобизнесе</option>
+                    <option value="Разобрать подачу и сообщения (без «сделайте за меня»)">Разобрать подачу и сообщения (без «сделайте за меня»)</option>
+                    <option value="Понять, консультация мне или наставничество">Понять, консультация мне или наставничество</option>
+                    <option value="Понять, с чего начать">Понять, с чего начать</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={label} htmlFor={`${idPrefix}-timeline`}>
+                    Когда хотите стартовать? <span className="text-accent">*</span>
+                  </label>
+                  <select
+                    id={`${idPrefix}-timeline`}
+                    required
+                    className={field}
+                    value={form.timeline}
+                    onChange={(e) => set("timeline", e.target.value)}
+                  >
+                    <option value="">Выбери</option>
+                    <option value="В ближайшие 7 дней">В ближайшие 7 дней</option>
+                    <option value="В течение месяца">В течение месяца</option>
+                    <option value="Чуть позже — оставить заявку">Чуть позже — оставить заявку</option>
+                    <option value="Пока изучаю варианты">Пока изучаю варианты</option>
                   </select>
                 </div>
 
@@ -304,7 +290,7 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
                   />
                 </div>
 
-                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-stroke/20 bg-red-50/50 p-3 text-sm dark:border-white/10 dark:bg-accent/10">
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stroke/20 bg-accent/10 p-3 text-sm dark:border-white/10 dark:bg-accent/10">
                   <input
                     type="checkbox"
                     required
@@ -312,8 +298,9 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
                     checked={form.consent}
                     onChange={(e) => set("consent", e.target.checked)}
                   />
-                  <span className="text-zinc-700 dark:text-white">
-                    Согласен получить Starter Pack и связанные материалы. Понимаю, что сейчас это тестовый приём без внешней отправки.
+                  <span className="text-zinc-700 dark:text-[#ddd1ba]">
+                    Согласен на первичный контакт по заявке и понимаю, что сейчас это локальный тестовый приём
+                    без внешней CRM.
                   </span>
                 </label>
 
@@ -331,9 +318,10 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
                 <p className="font-display text-4xl text-accent" aria-hidden>
                   ✓
                 </p>
-                <p className="mt-4 font-display text-lg uppercase text-zinc-900 dark:text-white">Спасибо!</p>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white">
-                  Анкета принята. Приём в CRM или на почту подключим позже — данные уже в статистике и в{" "}
+                <p className="mt-4 font-display text-lg uppercase text-zinc-900 dark:text-zinc-100">Спасибо!</p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                  Запрос сохранён. Позже его можно будет подключить к CRM или почте, а сейчас данные уже есть в
+                  статистике и в{" "}
                   <code className="text-xs">localStorage</code> браузера.
                 </p>
                 <Button type="button" variant="primary" className="mt-8 w-full sm:w-auto" onClick={onClose}>

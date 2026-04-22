@@ -32,6 +32,10 @@ const config: Config = {
           "0%, 100%": { opacity: "0.28" },
           "50%": { opacity: "0.95" },
         },
+        "hero-glow": {
+          "0%, 100%": { opacity: "0.45" },
+          "50%": { opacity: "0.85" },
+        },
       },
       animation: {
         marquee: "marquee 38s linear infinite",
@@ -39,6 +43,7 @@ const config: Config = {
         "placeholder-glow": "placeholder-glow 5.5s ease-in-out infinite",
         "placeholder-shine": "placeholder-shine 9s ease-in-out infinite",
         "typewriter-caret": "typewriter-caret 0.95s ease-in-out infinite",
+        "hero-glow": "hero-glow 7s ease-in-out infinite",
       },
       colors: {
         page: "rgb(var(--page-rgb) / <alpha-value>)",
@@ -48,7 +53,7 @@ const config: Config = {
         ink: "rgb(var(--ink-rgb) / <alpha-value>)",
         /** Границы: на белом — тёмный штрих с alpha, в dark — светлый */
         stroke: "rgb(var(--stroke-rgb) / <alpha-value>)",
-        accent: "#e01c1c",
+        accent: "rgb(var(--accent-rgb) / <alpha-value>)",
         muted: "#71717a",
         background: "rgb(var(--page-rgb) / <alpha-value>)",
       },

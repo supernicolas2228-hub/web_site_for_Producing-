@@ -23,13 +23,14 @@ export function Pricing() {
     <section
       id="pricing"
       ref={ref}
-      className="scroll-mt-24 border-b border-stroke/15 bg-band/55 py-16 backdrop-blur-xl dark:border-white/10 dark:bg-band/35 sm:py-20 lg:py-28"
+      className="scroll-mt-24 border-b border-stroke/15 bg-band/34 py-16 backdrop-blur-xl dark:border-white/10 dark:bg-band/24 sm:py-20 lg:py-28"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p className="font-display text-[11px] uppercase tracking-[0.28em] text-accent">Контакт и запись</p>
         <TypewriterText
           as="h2"
           text={pricing.title}
-          className="font-display text-[clamp(1.75rem,4vw,3.25rem)] uppercase leading-tight tracking-tight text-zinc-900 dark:text-white"
+          className="mt-3 font-display text-[clamp(1.9rem,4vw,3.7rem)] uppercase leading-[1.02] tracking-tight text-zinc-900 dark:text-zinc-100"
           start={inView}
           speedMs={10}
           onComplete={() => setHeadDone(true)}
@@ -40,7 +41,7 @@ export function Pricing() {
           initial="hidden"
           animate={inView && headDone ? "show" : "hidden"}
         >
-          <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:items-stretch">
+          <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-8">
             {pricing.plans.map((plan) => {
               const featured = plan.featured;
               return (
@@ -53,20 +54,38 @@ export function Pricing() {
                     hover
                     className={`relative flex h-full flex-col ${
                       featured
-                        ? "border-2 border-accent !bg-red-50/95 shadow-lift ring-2 ring-accent/25 backdrop-blur-xl dark:!border-accent/55 dark:!bg-black/50 dark:!shadow-plate dark:ring-accent/30 lg:scale-[1.03]"
+                        ? "overflow-visible border-2 border-accent !bg-slate-200/95 pt-10 shadow-lift ring-2 ring-accent/25 backdrop-blur-xl dark:!border-accent/55 dark:!bg-[#1a2330] dark:!shadow-plate dark:ring-accent/26 lg:scale-[1.03]"
                         : ""
                     }`}
                   >
                     {featured && (
-                      <span className="absolute -top-3 right-4 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md shadow-accent/40">
+                      <>
+                        <motion.span
+                          className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+                          animate={{ opacity: [0.35, 1, 0.35], scaleX: [0.9, 1, 0.9] }}
+                          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                          aria-hidden
+                        />
+                        <motion.span
+                          className="pointer-events-none absolute inset-y-10 right-6 w-20 rounded-full bg-[radial-gradient(circle,rgb(var(--accent-rgb)/0.16),transparent_70%)] blur-2xl"
+                          animate={{ opacity: [0.2, 0.42, 0.2], scale: [0.92, 1.06, 0.92] }}
+                          transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+                          aria-hidden
+                        />
+                      </>
+                    )}
+                    {featured && (
+                      <span className="absolute right-4 top-4 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md shadow-accent/40">
                         Рекомендуем
                       </span>
                     )}
-                    <p className="font-display text-xl uppercase text-zinc-900 dark:text-white">{plan.period}</p>
-                    <p className="mt-4 font-body text-[1.6875rem] font-medium tabular-nums tracking-[-0.03em] text-zinc-700 antialiased dark:text-white sm:text-[1.875rem]">
+                    <p className="font-display text-xl uppercase tracking-[0.08em] text-zinc-900 dark:text-zinc-100">
+                      {plan.period}
+                    </p>
+                    <p className="mt-4 font-body text-[1.45rem] font-medium tabular-nums tracking-[-0.03em] text-zinc-700 antialiased dark:text-zinc-200 sm:text-[1.625rem]">
                       {plan.price}
                     </p>
-                    <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-white">
+                    <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
                       {plan.description}
                     </p>
                     <AnchorButton
@@ -87,9 +106,9 @@ export function Pricing() {
 
           <motion.div
             variants={fadeUp}
-            className="mt-16 rounded-2xl border border-stroke/20 bg-white/80 p-6 shadow-plate backdrop-blur-xl dark:border-white/20 dark:bg-black/50 sm:p-10"
+            className="ornate-frame mt-16 rounded-[2rem] border border-stroke/20 bg-white/55 p-6 shadow-plate backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:p-10"
           >
-            <div className="max-w-3xl space-y-3 text-base leading-relaxed text-zinc-700 sm:text-lg dark:text-white">
+            <div className="max-w-3xl space-y-3 text-base leading-relaxed text-zinc-700 sm:text-lg dark:text-zinc-300">
               {pricing.finalLines.map((line) => (
                 <p key={line}>{line}</p>
               ))}

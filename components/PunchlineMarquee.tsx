@@ -35,12 +35,12 @@ export function PunchlineMarquee({ text, className = "" }: Props) {
 
   return (
     <div
-      className={`border-y border-accent/25 bg-gradient-to-r from-band/90 via-red-50/40 to-band/90 backdrop-blur-md dark:border-accent/35 dark:from-black/55 dark:via-red-950/25 dark:to-black/55 ${className}`}
+      className={`border-y border-accent/25 bg-gradient-to-r from-band/90 via-[#efe4cf] to-band/90 backdrop-blur-md dark:border-accent/35 dark:from-black/45 dark:via-[#1a201b] dark:to-black/45 ${className}`}
     >
       <p className="sr-only">{text}</p>
 
       <div className="motion-reduce:flex hidden flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-4 text-center">
-        <span className="font-display text-sm font-bold uppercase leading-snug tracking-wide text-zinc-800 dark:text-white">
+        <span className="font-display text-sm font-bold uppercase leading-snug tracking-wide text-zinc-800 dark:text-zinc-200">
           <EmojiTone className="mr-2 align-[-0.12em] text-lg">💡</EmojiTone>
           {first} {second}
         </span>
@@ -59,7 +59,7 @@ export function PunchlineMarquee({ text, className = "" }: Props) {
               <EmojiTone className="shrink-0 text-lg sm:text-xl" aria-hidden>
                 💡
               </EmojiTone>
-              <span className="font-display text-[11px] font-bold uppercase leading-tight tracking-[0.2em] text-zinc-800 sm:text-xs md:text-[13px] dark:text-white">
+              <span className="font-display text-[11px] font-bold uppercase leading-tight tracking-[0.2em] text-zinc-800 sm:text-xs md:text-[13px] dark:text-zinc-200">
                 {seg.node}
               </span>
               <span className="font-display text-accent/50 sm:text-sm" aria-hidden>

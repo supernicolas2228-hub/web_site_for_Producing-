@@ -8,7 +8,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     <StarterPackProvider>
       <TrackingProvider />
       <Navbar />
-      <main>{children}</main>
+      <main className="relative overflow-x-clip">{children}</main>
       <Footer />
     </StarterPackProvider>
   );

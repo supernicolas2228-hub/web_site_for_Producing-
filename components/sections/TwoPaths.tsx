@@ -61,34 +61,23 @@ function PathCard({
     <motion.article
       variants={fadeUp}
       whileHover={{ y: -6, transition: { type: "spring", stiffness: 380, damping: 26 } }}
-      className={`group relative flex min-h-[280px] flex-col overflow-hidden p-6 shadow-[0_24px_56px_-32px_rgb(15_23_39_/_0.35)] dark:shadow-[0_28px_64px_-28px_rgb(0_0_0_/_0.65)] sm:min-h-[300px] sm:p-8 ${
+      className={`group relative flex min-h-[260px] flex-col overflow-hidden rounded-2xl p-6 shadow-plate sm:min-h-[280px] sm:p-7 ${
         isEmber
-          ? "rounded-[2rem_1rem_2rem_1.25rem] border border-accent/35 bg-gradient-to-br from-white via-white to-red-50/90 ring-1 ring-accent/20 dark:from-zinc-950 dark:via-zinc-950 dark:to-red-950/40 dark:ring-accent/30"
-          : "rounded-[1rem_2rem_1.25rem_2rem] border border-stroke/25 bg-gradient-to-bl from-white via-zinc-50/90 to-white ring-1 ring-stroke/15 dark:border-white/15 dark:from-zinc-950 dark:via-zinc-900/95 dark:to-black dark:ring-white/10"
+          ? "border border-accent/30 bg-white/80 dark:border-accent/25 dark:bg-[rgb(var(--surface-rgb)/0.92)]"
+          : "border border-stroke/20 bg-white/70 dark:border-white/10 dark:bg-[rgb(var(--surface-rgb)/0.88)]"
       }`}
     >
-      {/* срезанный «луч» по углу */}
       <div
-        className={`pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full blur-3xl transition-opacity duration-500 group-hover:opacity-100 ${
-          isEmber
-            ? "bg-accent/25 opacity-80 dark:bg-accent/35"
-            : "bg-zinc-400/20 opacity-60 dark:bg-white/10"
-        }`}
-        aria-hidden
-      />
-      <div
-        className={`pointer-events-none absolute inset-0 opacity-[0.4] transition-opacity group-hover:opacity-[0.55] dark:opacity-[0.25] dark:group-hover:opacity-[0.4] ${
-          isEmber
-            ? "bg-[repeating-linear-gradient(-18deg,transparent,transparent_13px,rgb(224_28_28_/_0.04)_13px,rgb(224_28_28_/_0.04)_14px)]"
-            : "bg-[repeating-linear-gradient(18deg,transparent,transparent_14px,rgb(9_9_11_/_0.03)_14px,rgb(9_9_11_/_0.03)_15px)] dark:bg-[repeating-linear-gradient(18deg,transparent,transparent_14px,rgb(255_255_255_/_0.02)_14px,rgb(255_255_255_/_0.02)_15px)]"
+        className={`pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl transition-opacity duration-500 group-hover:opacity-100 ${
+          isEmber ? "bg-accent/20 opacity-70 dark:bg-accent/25" : "bg-zinc-400/10 opacity-50 dark:bg-white/5"
         }`}
         aria-hidden
       />
       <span
         className={`pointer-events-none absolute bottom-4 right-5 font-display text-[clamp(4rem,14vw,7rem)] font-black leading-none tracking-tighter select-none ${
           isEmber
-            ? "text-accent/[0.07] transition-colors group-hover:text-accent/[0.14] dark:text-accent/[0.12] dark:group-hover:text-accent/[0.2]"
-            : "text-zinc-900/[0.04] transition-colors group-hover:text-zinc-900/[0.08] dark:text-white/[0.06] dark:group-hover:text-white/[0.11]"
+          ? "text-accent/[0.08] transition-colors group-hover:text-accent/[0.16] dark:text-accent/[0.12] dark:group-hover:text-accent/[0.2]"
+          : "text-zinc-900/[0.04] transition-colors group-hover:text-zinc-900/[0.08] dark:text-white/[0.05] dark:group-hover:text-white/[0.09]"
         }`}
         aria-hidden
       >
@@ -106,24 +95,26 @@ export function TwoPaths() {
 
   const starterPack = useStarterPack();
 
-  const toProduct = (from: string) => {
+  const toPricing = (from: string) => {
     void track("click_product", { from });
-    document.getElementById("product")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section
+    <motion.section
       id="two-paths"
       ref={ref}
-      className="relative isolate overflow-hidden border-b border-stroke/15 py-16 sm:py-20 lg:py-28 dark:border-white/10"
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative isolate overflow-hidden border-b border-stroke/15 py-14 sm:py-16 lg:py-20 dark:border-white/10"
     >
-      {/* фон: сетка + акцентное пятно */}
       <div
-        className="pointer-events-none absolute inset-0 -z-20 bg-band/88 dark:bg-band/52"
+        className="pointer-events-none absolute inset-0 -z-20 bg-band/68 dark:bg-band/36"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,transparent_0%,rgb(224_28_28_/_0.06)_48%,transparent_100%)] opacity-70 dark:opacity-50"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,transparent_0%,rgb(var(--accent-rgb)/0.08)_48%,transparent_100%)] opacity-70 dark:opacity-50"
         aria-hidden
       />
       <div
@@ -135,13 +126,6 @@ export function TwoPaths() {
         }}
         aria-hidden
       />
-      <p
-        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 select-none font-display text-[min(42vw,520px)] font-black uppercase leading-none tracking-tighter text-zinc-900/[0.035] dark:text-white/[0.04]"
-        aria-hidden
-      >
-        вход
-      </p>
-
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
           <div className="flex w-full max-w-2xl items-center gap-4">
@@ -154,12 +138,12 @@ export function TwoPaths() {
           <TypewriterText
             as="h2"
             text={twoPaths.title}
-            className="mt-5 max-w-3xl font-display text-[clamp(1.9rem,4.6vw,3.5rem)] uppercase leading-[1.06] tracking-tight text-zinc-900 dark:text-white"
+            className="mt-5 max-w-4xl font-display text-[clamp(1.9rem,4.6vw,3.5rem)] uppercase leading-[1.03] tracking-tight text-zinc-900 dark:text-zinc-100"
             start={inView}
             speedMs={9}
             onComplete={() => setHeadDone(true)}
           />
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-white">
+          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-400">
             {twoPaths.lead}
           </p>
           <motion.div
@@ -195,27 +179,16 @@ export function TwoPaths() {
                 <span className="rounded-md bg-accent px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.24em] text-white shadow-md shadow-accent/25">
                   {twoPaths.starter.lane}
                 </span>
-                <span className="font-display text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-white">
+                <span className="font-display text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
                   {twoPaths.starter.laneHint}
                 </span>
               </div>
-              <h3 className="mt-3 font-display text-xl uppercase leading-snug tracking-tight text-zinc-900 sm:text-2xl dark:text-white">
+              <h3 className="mt-3 font-display text-xl uppercase leading-snug tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-100">
                 {twoPaths.starter.title}
               </h3>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-white">
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300">
                 {twoPaths.starter.text}
               </p>
-              <ul className="mt-5 flex flex-wrap gap-2 border-t border-accent/15 pt-5 dark:border-white/10">
-                {twoPaths.starter.perks.map((p) => (
-                  <li
-                    key={p}
-                    className="flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-800 dark:border-accent/30 dark:bg-accent/15 dark:text-white"
-                  >
-                    <span className="h-1 w-1 rounded-full bg-accent" aria-hidden />
-                    {p}
-                  </li>
-                ))}
-              </ul>
               <Button
                 type="button"
                 className="mt-8 w-full !justify-center"
@@ -230,37 +203,26 @@ export function TwoPaths() {
 
             <PathCard variant="slate" index="02">
               <div className="mb-1 flex flex-wrap items-center gap-2">
-                <span className="rounded-md border-2 border-zinc-900/85 px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.24em] text-zinc-900 dark:border-white/65 dark:text-white">
+                <span className="rounded-md border border-zinc-900/85 px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.24em] text-zinc-900 dark:border-white/32 dark:text-zinc-100">
                   {twoPaths.product.lane}
                 </span>
-                <span className="font-display text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-white">
+                <span className="font-display text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
                   {twoPaths.product.laneHint}
                 </span>
               </div>
-              <h3 className="mt-3 font-display text-xl uppercase leading-snug tracking-tight text-zinc-900 sm:text-2xl dark:text-white">
+              <h3 className="mt-3 font-display text-xl uppercase leading-snug tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-100">
                 {twoPaths.product.title}
               </h3>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-white">
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300">
                 {twoPaths.product.text}
               </p>
-              <ul className="mt-5 flex flex-wrap gap-2 border-t border-stroke/20 pt-5 dark:border-white/10">
-                {twoPaths.product.perks.map((p) => (
-                  <li
-                    key={p}
-                    className="flex items-center gap-1.5 rounded-full border border-stroke/15 bg-white/75 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:border-white/12 dark:bg-black/40 dark:text-white"
-                  >
-                    <span className="h-1 w-1 rounded-full bg-zinc-400 dark:bg-white/50" aria-hidden />
-                    {p}
-                  </li>
-                ))}
-              </ul>
               <AnchorButton
-                href="#product"
+                href="#pricing"
                 variant="secondary"
                 className="mt-8 w-full !justify-center"
                 onClick={(e) => {
                   e.preventDefault();
-                  toProduct("two_paths_product");
+                  toPricing("two_paths_product");
                 }}
               >
                 {twoPaths.product.cta}
@@ -270,12 +232,12 @@ export function TwoPaths() {
 
           <motion.p
             variants={fadeUp}
-            className="mx-auto mt-12 max-w-md text-center text-xs leading-relaxed text-zinc-500 dark:text-white"
+            className="mx-auto mt-12 max-w-md text-center text-xs leading-relaxed text-zinc-500 dark:text-zinc-500"
           >
             {twoPaths.footerNote}
           </motion.p>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

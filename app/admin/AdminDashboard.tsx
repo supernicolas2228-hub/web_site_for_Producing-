@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { ClicksChart } from "@/components/admin/ClicksChart";
 import { MetricCard } from "@/components/admin/MetricCard";
 import { VisitsChart } from "@/components/admin/VisitsChart";
+import { site } from "@/config/content";
 import { ANALYTICS_UTM_NONE_LABEL, type AdminAnalytics } from "@/lib/analytics";
 
 function formatLeadData(raw: string | null): string {
@@ -77,7 +78,7 @@ export function AdminDashboard() {
           <h1 className="font-display text-4xl uppercase tracking-wide text-zinc-900 sm:text-5xl dark:text-white">
             Аналитика
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-white">Sell is Life — дашборд</p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-white">{site.name} — дашборд</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <ThemeToggle />
@@ -106,9 +107,9 @@ export function AdminDashboard() {
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               <MetricCard label="Посещения" value={m.visits} />
-              <MetricCard label="Starter Pack" value={m.starterClicks} />
-              <MetricCard label="Продукт" value={m.productClicks} />
-              <MetricCard label="Тарифы" value={m.pricingClicks} />
+              <MetricCard label="Запрос" value={m.starterClicks} />
+              <MetricCard label="К тарифам" value={m.productClicks} />
+              <MetricCard label="CTA" value={m.pricingClicks} />
               <MetricCard label="Конверсия" value={`${m.conversionPct}%`} hint="все клики / визиты" />
             </div>
           </section>
@@ -247,7 +248,7 @@ export function AdminDashboard() {
 
       <section className={panel}>
         <h3 className="font-display text-lg uppercase text-zinc-800 dark:text-white">
-          Заявки (клики Starter Pack)
+          Заявки и быстрые запросы
         </h3>
         <p className="mt-1 text-xs text-zinc-500 dark:text-white">Последние события с источником в данных</p>
         <div className="mt-4 overflow-x-auto">

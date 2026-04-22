@@ -2,62 +2,62 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { EmojiTone } from "@/components/EmojiTone";
-import { PunchlineMarquee } from "@/components/PunchlineMarquee";
 import { forWho } from "@/config/content";
+import { PunchlineMarquee } from "@/components/PunchlineMarquee";
 import { TypewriterText } from "@/components/TypewriterText";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
-const itemEmojis = ["🎯", "⏳", "🧭", "💸", "🏠", "✨"] as const;
-
 export function ForWho() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-12%" });
+  const inView = useInView(ref, { once: true, margin: "-10%" });
   const [headDone, setHeadDone] = useState(false);
 
   return (
-    <section
+    <motion.section
+      id="for-who"
       ref={ref}
-      className="border-b border-stroke/15 bg-page/50 py-16 backdrop-blur-xl dark:border-white/10 dark:bg-page/35 sm:py-20 lg:py-28"
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      className="scroll-mt-24 border-b border-stroke/15 bg-page/35 py-14 backdrop-blur-xl dark:border-white/10 dark:bg-page/22 sm:py-16 lg:py-20"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
         <TypewriterText
           as="h2"
           text={forWho.title}
-          className="font-display text-[clamp(1.75rem,4vw,3.25rem)] uppercase leading-tight tracking-tight text-zinc-900 dark:text-white"
+          className="font-display text-[clamp(1.5rem,3.4vw,2.15rem)] font-semibold uppercase leading-[1.08] tracking-tight text-zinc-900 dark:text-zinc-100"
           start={inView}
-          speedMs={10}
+          speedMs={11}
           onComplete={() => setHeadDone(true)}
         />
-        <motion.div
+        <motion.ul
           variants={staggerContainer}
           initial="hidden"
           animate={inView && headDone ? "show" : "hidden"}
+          className="mt-6 space-y-3"
         >
-          <motion.ul variants={fadeUp} className="mt-10 grid gap-3 sm:gap-4 lg:max-w-4xl">
-            {forWho.items.map((item, i) => (
-              <li
-                key={item}
-                className="flex min-h-[48px] items-start gap-3 rounded-xl border border-stroke/20 bg-white/80 px-4 py-3 shadow-plate backdrop-blur-xl dark:border-white/20 dark:bg-black/50 sm:px-5"
-              >
-                <EmojiTone className="mt-0.5 shrink-0 text-lg leading-none sm:text-xl" aria-hidden>
-                  {itemEmojis[i % itemEmojis.length]}
-                </EmojiTone>
-                <span className="text-base text-zinc-800 sm:text-lg dark:text-white">{item}</span>
-              </li>
-            ))}
-          </motion.ul>
-        </motion.div>
+          {forWho.items.map((item) => (
+            <motion.li
+              key={item}
+              variants={fadeUp}
+              className="border-l-2 border-accent/50 pl-4 text-[15px] leading-snug text-zinc-800 dark:text-zinc-200"
+            >
+              {item}
+            </motion.li>
+          ))}
+        </motion.ul>
       </div>
 
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        animate={inView && headDone ? "show" : "hidden"}
-        className="mt-10 w-full"
-      >
-        <PunchlineMarquee text={forWho.punchline} />
-      </motion.div>
-    </section>
+      {forWho.punchline.trim() ? (
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate={inView && headDone ? "show" : "hidden"}
+          className="mt-8 w-full"
+        >
+          <PunchlineMarquee text={forWho.punchline} />
+        </motion.div>
+      ) : null}
+    </motion.section>
   );
 }

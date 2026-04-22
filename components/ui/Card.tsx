@@ -18,15 +18,19 @@ export function Card({
       whileHover={
         hover
           ? {
-              y: -6,
+              y: -5,
               boxShadow:
                 "var(--shadow-plate), var(--shadow-lift), 0 0 0 1px var(--ring-accent)",
             }
           : undefined
       }
       transition={{ type: "spring", stiffness: 380, damping: 26 }}
-      className={`rounded-xl border border-stroke/18 bg-white/75 p-6 shadow-plate backdrop-blur-xl dark:border-white/20 dark:bg-black/50 ${className}`}
+      className={`ornate-frame relative overflow-hidden rounded-[1.5rem] border border-stroke/18 bg-white/55 p-6 shadow-plate backdrop-blur-xl dark:border-white/12 dark:bg-white/5 ${className}`}
     >
+      <span
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--accent-rgb)/0.08),transparent_48%)]"
+        aria-hidden
+      />
       {children}
     </motion.div>
   );

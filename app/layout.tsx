@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Lora, Manrope } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { site } from "@/config/content";
 import { themeInitInlineScript } from "@/lib/theme";
 
-/** Заголовки: выразительная антиква, «дорогой» редакционный тон, кириллица */
-const display = Cormorant_Garamond({
+const display = Lora({
   subsets: ["latin", "cyrillic"],
   variable: "--font-display",
   display: "swap",
   weight: ["500", "600", "700"],
 });
 
-/** Основной текст: современный гротеск, хорошо читается на телефоне */
 const body = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-body",
@@ -23,7 +21,7 @@ const body = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: `${site.name} — система первых денег без хаоса`,
+  title: `${site.name} — консультации и наставничество`,
   description: site.tagline,
 };
 

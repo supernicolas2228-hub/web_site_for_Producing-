@@ -36,9 +36,9 @@ export function VisitsChart({ data }: { data: Row[] }) {
               boxShadow: "0 12px 40px -20px rgba(0,0,0,0.25)",
             }}
             labelStyle={{ color: "var(--chart-tooltip-label)" }}
-            itemStyle={{ color: "#e01c1c" }}
+            itemStyle={{ color: "rgb(var(--accent-rgb))" }}
           />
-          <Line type="monotone" dataKey="views" stroke="#e01c1c" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="views" stroke="rgb(var(--accent-rgb))" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

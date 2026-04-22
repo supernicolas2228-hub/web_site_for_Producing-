@@ -20,5 +20,5 @@ export function applyThemeClass(theme: Theme): void {
 
 /** Скрипт для <head>: без мигания до гидрации */
 export function themeInitInlineScript(): string {
-  return `(function(){try{var k='${STORAGE_KEY}';var s=localStorage.getItem(k);var d=document.documentElement;if(s==='light'||s==='dark'){d.classList.add(s);return;}if(window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');}else{d.classList.add('light');}}catch(e){document.documentElement.classList.add('light');}})();`;
+  return `(function(){try{var k='${STORAGE_KEY}';var s=localStorage.getItem(k);var d=document.documentElement;if(s==='light'||s==='dark'){d.classList.add(s);return;}d.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}})();`;
 }

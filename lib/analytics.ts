@@ -115,22 +115,22 @@ export function buildAnalytics(all: Event[]): AdminAnalytics {
 
   const clicksByLabel = [
     {
-      name: "Starter Pack (клик)",
+      name: "Запрос (клик)",
       key: "click_starter_pack",
       count: monthEvents.filter((e) => e.event === "click_starter_pack").length,
     },
     {
-      name: "Starter Pack (анкета)",
+      name: "Запрос (форма)",
       key: "starter_pack_survey_submit",
       count: monthEvents.filter((e) => e.event === "starter_pack_survey_submit").length,
     },
     {
-      name: "Продукт",
+      name: "Клики к тарифам",
       key: "click_product",
       count: monthEvents.filter((e) => e.event === "click_product").length,
     },
     {
-      name: "Тарифы",
+      name: "CTA сотрудничества",
       key: "click_pricing",
       count: monthEvents.filter((e) => e.event === "click_pricing").length,
     },
