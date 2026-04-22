@@ -31,7 +31,7 @@ export function Navbar() {
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-colors ${barBg}`}>
-      {site.topRibbon ? (
+      {site.topRibbon.trim() ? (
         <p className="border-b border-stroke/10 bg-band/45 px-4 py-2 text-center text-[10px] font-medium leading-snug tracking-[0.06em] text-zinc-600 dark:border-white/8 dark:bg-black/22 dark:text-zinc-400 sm:text-[11px] sm:tracking-[0.08em]">
           {site.topRibbon}
         </p>

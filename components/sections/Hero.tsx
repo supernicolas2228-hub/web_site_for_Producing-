@@ -59,7 +59,7 @@ export function Hero() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden border-b border-stroke/15 pt-[8.5rem] pb-14 dark:border-white/10 sm:pt-[9rem] sm:pb-16 lg:pt-[9.5rem] lg:pb-24"
+      className="relative overflow-hidden border-b border-stroke/15 pt-24 pb-14 dark:border-white/10 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-24"
     >
       <div
         className="pointer-events-none absolute inset-0 motion-reduce:animate-none"

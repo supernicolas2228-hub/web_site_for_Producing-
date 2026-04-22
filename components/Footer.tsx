@@ -5,6 +5,11 @@ import { SafeOutboundLink } from "@/components/SafeOutboundLink";
 
 export function Footer() {
   const year = new Date().getFullYear();
+  /** На Vercel подставляется при сборке — по этому коду видно, что сайт обновился */
+  const deployRef =
+    process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ??
+    process.env.NEXT_PUBLIC_DEPLOY_REF?.trim() ??
+    null;
   const linkClass =
     "text-sm uppercase tracking-[0.16em] text-zinc-700 transition hover:text-accent dark:text-zinc-300 dark:hover:text-zinc-100";
 
@@ -29,6 +34,11 @@ export function Footer() {
           <p className="mt-4 text-xs uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-500">
             © {year} {site.name}. Личный стиль работы.
           </p>
+          {deployRef ? (
+            <p className="mt-2 font-mono text-[10px] tracking-tight text-zinc-400 dark:text-zinc-500">
+              Сборка: {deployRef}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-col gap-3">
           <span className="font-display text-sm uppercase tracking-[0.26em] text-zinc-500 dark:text-zinc-500">
