@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { pricing } from "@/config/content";
-import { links } from "@/config/links";
+import { links, isPlaceholderLink } from "@/config/links";
 import { useStarterPack } from "@/components/starter-pack/StarterPackProvider";
 import { Card } from "@/components/ui/Card";
 import { AnchorButton, Button } from "@/components/ui/Button";
@@ -17,7 +17,9 @@ export function Pricing() {
   const inView = useInView(ref, { once: true, margin: "-12%" });
   const [headDone, setHeadDone] = useState(false);
   const starterPack = useStarterPack();
-  const joinCta = outboundAnchorProps(links.joinSellIsLife);
+  const joinHref = links.joinSellIsLife;
+  const joinCta = outboundAnchorProps(joinHref);
+  const payLinkReady = !isPlaceholderLink(joinHref);
 
   return (
     <section
@@ -88,16 +90,30 @@ export function Pricing() {
                     <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
                       {plan.description}
                     </p>
-                    <AnchorButton
-                      {...joinCta}
-                      variant={featured ? "primary" : "secondary"}
-                      className="mt-6 w-full !justify-center"
-                      onClick={chainOnClick(joinCta.onClick, () =>
-                        void track("click_pricing", { plan: plan.id, period: plan.period })
-                      )}
-                    >
-                      Выбрать
-                    </AnchorButton>
+                    {payLinkReady ? (
+                      <AnchorButton
+                        {...joinCta}
+                        variant={featured ? "primary" : "secondary"}
+                        className="mt-6 w-full !justify-center"
+                        onClick={chainOnClick(joinCta.onClick, () =>
+                          void track("click_pricing", { plan: plan.id, period: plan.period })
+                        )}
+                      >
+                        Выбрать
+                      </AnchorButton>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant={featured ? "primary" : "secondary"}
+                        className="mt-6 w-full !justify-center"
+                        onClick={() => {
+                          void track("click_pricing", { plan: plan.id, period: plan.period, via: "starter_pack" });
+                          starterPack.open(`pricing_plan_${plan.id}`);
+                        }}
+                      >
+                        Записаться
+                      </Button>
+                    )}
                   </Card>
                 </motion.div>
               );
@@ -114,14 +130,26 @@ export function Pricing() {
               ))}
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <AnchorButton
-                {...joinCta}
-                onClick={chainOnClick(joinCta.onClick, () =>
-                  void track("click_pricing", { plan: "final_cta", label: "join" })
-                )}
-              >
-                {pricing.ctaPaid}
-              </AnchorButton>
+              {payLinkReady ? (
+                <AnchorButton
+                  {...joinCta}
+                  onClick={chainOnClick(joinCta.onClick, () =>
+                    void track("click_pricing", { plan: "final_cta", label: "join" })
+                  )}
+                >
+                  {pricing.ctaPaid}
+                </AnchorButton>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    void track("click_pricing", { plan: "final_cta", label: "starter_pack" });
+                    starterPack.open("pricing_final_paid");
+                  }}
+                >
+                  {pricing.ctaPaid}
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="secondary"

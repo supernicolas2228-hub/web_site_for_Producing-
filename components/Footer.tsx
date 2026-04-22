@@ -21,6 +21,11 @@ export function Footer() {
           <p className="mt-3 max-w-md text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
             {site.tagline}
           </p>
+          {site.legalEntity?.trim() ? (
+            <p className="mt-3 max-w-lg text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+              {site.legalEntity.trim()}
+            </p>
+          ) : null}
           <p className="mt-4 text-xs uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-500">
             © {year} {site.name}. Личный стиль работы.
           </p>
