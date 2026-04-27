@@ -40,27 +40,60 @@ jobs:
       - name: Pack out/
         run: tar -czf beget-out.tar.gz -C out .
 
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
+      # Не используем webfactory/ssh-agent — часто падает при пустом секрете или неверном формате ключа.
+      - name: Check Action secrets for deploy
+        env:
+          KEY: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.BEGET_SSH_HOST }}
+          USER: ${{ secrets.BEGET_SSH_USER }}
+        run: |
+          set -e
+          ERR=""
+          [ -z "${KEY:-}" ] && ERR="${ERR} BEGET_SSH_PRIVATE_KEY"
+          [ -z "${HOST:-}" ] && ERR="${ERR} BEGET_SSH_HOST"
+          [ -z "${USER:-}" ] && ERR="${ERR} BEGET_SSH_USER"
+          if [ -n "$ERR" ]; then
+            echo "::error title=Нет секретов для SSH::Добавьте в GitHub → Settings → Secrets and variables → Actions:${ERR}"
+            echo "::notice::Создайте ключ без пароля: ssh-keygen -t ed25519 -f beget_ci -N \"\" и добавьте beget_ci.pub в панели Beget"
+            exit 1
+          fi
+
+      - name: Install SSH key file (без ssh-agent)
+        env:
+          BEGET_SSH_PRIVATE_KEY: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$BEGET_SSH_PRIVATE_KEY" > ~/.ssh/beget_github_actions
+          chmod 600 ~/.ssh/beget_github_actions
+          grep -q "BEGIN " ~/.ssh/beget_github_actions || {
+            echo "::error::BEGET_SSH_PRIVATE_KEY должен содержать строку -----BEGIN … PRIVATE KEY-----"
+            exit 4
+          }
 
       - name: Trust Beget host key
         env:
           BEGET_SSH_HOST: ${{ secrets.BEGET_SSH_HOST }}
         run: |
+          set -e
           mkdir -p ~/.ssh
           ssh-keyscan -H "$BEGET_SSH_HOST" >> ~/.ssh/known_hosts
 
       - name: Upload tarball
         env:
           TARGET: ${{ secrets.BEGET_SSH_USER }}@${{ secrets.BEGET_SSH_HOST }}
-        run: scp beget-out.tar.gz "${TARGET}:~/beget-out.tar.gz"
+        run: |
+          set -e
+          scp -i ~/.ssh/beget_github_actions -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            beget-out.tar.gz "${TARGET}:~/beget-out.tar.gz"
 
       - name: Unpack to public_html
         env:
           TARGET: ${{ secrets.BEGET_SSH_USER }}@${{ secrets.BEGET_SSH_HOST }}
         run: |
-          ssh "$TARGET" 'set -e
+          set -e
+          ssh -i ~/.ssh/beget_github_actions -o IdentitiesOnly=yes "$TARGET" 'set -e
           for d in "$HOME/supernh5.beget.tech/public_html" "$HOME/sanchaevkirill.ru/public_html"; do
             mkdir -p "$d"
             rm -rf "${d:?}"/*
@@ -69,8 +102,8 @@ jobs:
           done
           rm -f "$HOME/beget-out.tar.gz"'
 
-# Обязательные секреты репозитория (Settings → Secrets and variables → Actions):
-#   BEGET_SSH_PRIVATE_KEY — приватный ключ SSH (вся строка BEGIN…END)
-#   BEGET_SSH_HOST        — хост Beget, например u123456.freeshell.beget.tech
-#   BEGET_SSH_USER        — логин SSH (часто совпадает с аккаунтом Beget)
-# Тот же ключ, что для локального npm run deploy:beget (scp на сервер).
+# Обязательные секреты (Settings → Secrets and variables → Actions → Repository secrets):
+#   BEGET_SSH_PRIVATE_KEY — ВЕСЬ приватный ключ одним блоком (BEGIN OPENSSH PRIVATE KEY … END …), без кавычек.
+#   BEGET_SSH_HOST        — только хост, например u123456.freeshell.beget.tech (без user@ и без ssh://)
+#   BEGET_SSH_USER        — логин SSH с Beget (раздел «SSH-доступ» в панели).
+# Ключ должен быть БЕЗ пароля (passphrase), иначе CI не сможет им воспользоваться.
