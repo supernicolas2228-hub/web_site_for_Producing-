@@ -6,6 +6,7 @@ import { nav, site } from "@/config/content";
 import { links, isPlaceholderLink } from "@/config/links";
 import { Button } from "@/components/ui/Button";
 import { useStarterPack } from "@/components/starter-pack/StarterPackProvider";
+import { NavbarBrand } from "@/components/NavbarBrand";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { track } from "@/lib/track";
 import { fadeUp, spring, staggerSnappy } from "@/lib/motion";
@@ -56,11 +57,12 @@ export function Navbar() {
         </p>
       ) : null}
       <motion.div
-        className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8"
+        className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:gap-4 lg:px-8"
         initial={reduceMotion ? false : { opacity: 0, y: -14 }}
         animate={mounted ? { opacity: 1, y: 0 } : {}}
         transition={spring.nav}
       >
+        <NavbarBrand mounted={mounted} />
         <motion.nav
           className="hidden min-w-0 flex-1 justify-center gap-6 lg:flex xl:gap-8"
           variants={staggerSnappy}
@@ -82,7 +84,7 @@ export function Navbar() {
         </motion.nav>
 
         <motion.div
-          className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3"
+          className="ml-auto flex min-w-0 shrink-0 items-center gap-2 sm:gap-3"
           initial={reduceMotion ? false : { opacity: 0, x: 12 }}
           animate={mounted ? { opacity: 1, x: 0 } : {}}
           transition={spring.navDrawer}

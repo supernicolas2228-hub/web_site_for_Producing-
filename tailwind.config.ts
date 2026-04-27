@@ -39,6 +39,12 @@ const config: Config = {
           "0%, 100%": { opacity: "0.45" },
           "50%": { opacity: "0.85" },
         },
+        /** Полоска-блик по имени в шапке (при hover) */
+        "nav-brand-sweep": {
+          "0%": { transform: "translateX(-120%) skewX(-12deg)", opacity: "0" },
+          "12%": { opacity: "0.85" },
+          "100%": { transform: "translateX(220%) skewX(-12deg)", opacity: "0" },
+        },
       },
       animation: {
         marquee: "marquee 38s linear infinite",
@@ -48,6 +54,7 @@ const config: Config = {
         "placeholder-shine": "placeholder-shine 9s ease-in-out infinite",
         "typewriter-caret": "typewriter-caret 0.95s ease-in-out infinite",
         "hero-glow": "hero-glow 7s ease-in-out infinite",
+        "nav-brand-sweep": "nav-brand-sweep 1.85s ease-in-out infinite",
       },
       colors: {
         page: "rgb(var(--page-rgb) / <alpha-value>)",
