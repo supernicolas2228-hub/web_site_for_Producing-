@@ -31,7 +31,7 @@ export const hero = {
   ctaHint: "Ниже — все форматы и цены в одном месте, плюс ответы на частые вопросы.",
 } as const;
 
-/** Отдельный блок сразу после Hero: фото + соцсети. Файл в `public/images/kirill-hero-strategist.png`. */
+/** Блок фото + соцсети (на главной — после секции вопросов). Файл в `public/images/kirill-hero-strategist.png`. */
 export const contactSection = {
   id: "contact" as const,
   title: "Связь и соцсети",
@@ -131,8 +131,9 @@ export const faq = {
   title: "Что чаще всего уточняют",
   contactTitle: "Связь и соцсети",
   contactHint: "Напиши в удобный канал — отвечу и подскажу следующий шаг.",
-  /** Каналы вынесены в отдельный блок #contact выше */
-  contactMovedNote: "Каналы и мессенджеры — в отдельном блоке «Связь и соцсети» выше на странице.",
+  /** После блока вопросов идёт отдельная секция #contact */
+  contactMovedNote:
+    "Каналы и мессенджеры — в блоке «Связь и соцсети» ниже, сразу после этих ответов.",
   /** Кнопка в блоке FAQ (ведёт в Telegram, не форма записи) */
   telegramChannelCta: "Перейти в Telegram-канал",
   /** Мелким текстом под кнопками — не кричит, но объясняет блокировки */
@@ -207,12 +208,12 @@ export const pricing = {
 export const nav = {
   anchors: [
     { label: "Обо мне", href: "#about" },
-    { label: "Связь", href: "#contact" },
     { label: "Для кого", href: "#for-who" },
     { label: "Что даю", href: "#what-i-give" },
     { label: "Кейсы", href: "#cases" },
     { label: "Тарифы", href: "#pricing" },
     { label: "Вопросы", href: "#faq" },
+    { label: "Связь", href: "#contact" },
   ],
   /** Внешняя ссылка «Продукт» в шапке; пусто — кнопку не показывать */
   productLabel: "",

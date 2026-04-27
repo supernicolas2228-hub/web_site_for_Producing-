@@ -5,7 +5,9 @@ import Image from "next/image";
 import { useRef } from "react";
 import { contactSection } from "@/config/content";
 import { links, isPlaceholderLink } from "@/config/links";
+import { TelegramMark } from "@/components/icons/TelegramMark";
 import { SectionHeading } from "@/components/SectionHeading";
+import { AnchorButton } from "@/components/ui/Button";
 import { sectionEnter, fadeUp, staggerSnappy } from "@/lib/motion";
 import { outboundAnchorProps, chainOnClick } from "@/lib/outbound-link";
 import { track } from "@/lib/track";
@@ -69,6 +71,33 @@ export function ContactSocial() {
                   const href = links[s.key];
                   if (isPlaceholderLink(href)) return null;
                   const base = outboundAnchorProps(href);
+
+                  if (s.key === "telegram") {
+                    return (
+                      <motion.div key={s.key} variants={fadeUp} className="w-full">
+                        <AnchorButton
+                          {...base}
+                          variant="secondary"
+                          attention
+                          onClick={chainOnClick(base.onClick, () =>
+                            void track("click_social", { network: s.key, from: "contact_section" }),
+                          )}
+                          className="reviews-telegram-cta group/rel w-full min-h-[46px] !justify-center gap-2.5 !px-6 !py-2.5 !text-xs sm:!min-h-[52px] sm:!px-7 sm:!py-3 sm:!text-sm"
+                        >
+                          <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/15 text-emerald-800 transition-all duration-300 group-hover/rel:scale-110 group-hover/rel:bg-emerald-500/25 group-hover/rel:text-emerald-950 dark:bg-emerald-400/12 dark:text-emerald-200 dark:group-hover/rel:bg-emerald-400/22 dark:group-hover/rel:text-white">
+                            <TelegramMark className="h-4 w-4" />
+                          </span>
+                          <span className="flex flex-col items-start gap-0.5 text-balance">
+                            <span>{s.label}</span>
+                            <span className="text-[11px] font-medium normal-case tracking-normal opacity-90">
+                              {s.hint}
+                            </span>
+                          </span>
+                        </AnchorButton>
+                      </motion.div>
+                    );
+                  }
+
                   return (
                     <motion.a
                       key={s.key}

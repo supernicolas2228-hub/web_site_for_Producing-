@@ -3,20 +3,29 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import { hero } from "@/config/content";
 
-const SESSION_KEY = "ks_preloader_done_v6";
+const SESSION_KEY = "ks_preloader_done_v8";
+
+/** Слова разлетаются от имени (как на simonprod.ru: акцент на успех / деньги). */
 const FX_WORDS = [
   "УСПЕХ",
   "ДЕНЬГИ",
+  "УСПЕХ",
+  "ДЕНЬГИ",
   "ДОХОД",
-  "ПОБЕДА",
   "РЕЗУЛЬТАТ",
   "РОСТ",
+  "ПОБЕДА",
+  "УСПЕХ",
+  "ДЕНЬГИ",
+  "ДОХОД",
+  "УСПЕХ",
 ] as const;
-const MAX_MS = 4800;
-const DOLLAR_MARKS = 12;
 
-/** Показать сцену снова: открой главную с `?replayLoader` (например для проверки после деплоя). */
+const MAX_MS = 5200;
+
+/** Показать сцену снова: открой главную с `?replayLoader`. */
 function wantsReplayLoader(): boolean {
   if (typeof window === "undefined") return false;
   try {
@@ -58,7 +67,7 @@ function whenDomReady(fn: () => void) {
 }
 
 /**
- * Безликий белый боксёр (только силуэт + перчатки), удар по груше, взлёт $ и слов.
+ * Имя по центру → из центра разлетаются слова (УСПЕХ, ДЕНЬГИ и др.).
  * Portal в `document.body`, `html.site-preloader-active` скрывает #site-root.
  */
 export function SitePreloader() {
@@ -66,13 +75,13 @@ export function SitePreloader() {
   const [mountTarget, setMountTarget] = useState<HTMLElement | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
-  const boxerRef = useRef<HTMLDivElement>(null);
-  const fistRef = useRef<HTMLDivElement>(null);
-  const bagRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLParagraphElement>(null);
   const fxRef = useRef<HTMLDivElement>(null);
   const safetyRef = useRef(0);
   const killedRef = useRef(false);
   const gsapTargetsRef = useRef<Element[]>([]);
+
+  const displayName = hero.portraitAlt.trim() || "Кирилл Санчаев";
 
   useLayoutEffect(() => {
     if (getSkipSession()) {
@@ -117,11 +126,9 @@ export function SitePreloader() {
       if (killedRef.current) return;
       const root = rootRef.current;
       const box = boxRef.current;
-      const boxer = boxerRef.current;
-      const fist = fistRef.current;
-      const bag = bagRef.current;
+      const nameEl = nameRef.current;
       const fx = fxRef.current;
-      if (!root || !box || !boxer || !fist || !bag || !fx) {
+      if (!root || !box || !nameEl || !fx) {
         endAndHide();
         return;
       }
@@ -133,7 +140,7 @@ export function SitePreloader() {
       }
 
       const vfxArr = Array.from(vfxEls);
-      gsapTargetsRef.current = [root, box, boxer, fist, bag, ...vfxArr];
+      gsapTargetsRef.current = [root, box, nameEl, ...vfxArr];
 
       const lock = () => {
         elBody.style.overflow = "hidden";
@@ -161,94 +168,94 @@ export function SitePreloader() {
 
       const w = window.innerWidth;
       const isNarrow = w < 640;
-      const burst = (i: number) => {
-        const angle = (i / Math.max(vfxArr.length, 1)) * Math.PI * 2 + Math.random() * 0.5;
-        const r = (isNarrow ? 0.5 : 1) * (140 + Math.random() * 240);
-        return { x: Math.cos(angle) * r, y: Math.sin(angle) * r - 28, rot: 120 + Math.random() * 240 };
+      const burst = (i: number, total: number) => {
+        const base = (i / Math.max(total, 1)) * Math.PI * 2 - Math.PI / 2;
+        const jitter = (Math.random() - 0.5) * 0.85;
+        const angle = base + jitter;
+        const r = (isNarrow ? 0.42 : 1) * (140 + Math.random() * 240);
+        return {
+          x: Math.cos(angle) * r,
+          y: Math.sin(angle) * r - (isNarrow ? 18 : 26),
+          rot: (Math.random() - 0.5) * 140,
+          sc: 0.35 + Math.random() * 0.55,
+        };
       };
 
-      const fistBackX = isNarrow ? -52 : -82;
-      const fistContactX = isNarrow ? 22 : 34;
-
-      gsap.set(vfxArr, { x: 0, y: 0, scale: 0.78, opacity: 1, rotation: 0, transformOrigin: "50% 50%" });
-      gsap.set(fist, {
-        x: fistBackX,
-        y: 4,
-        scale: 1,
-        rotation: -3,
-        transformOrigin: "12% 88%",
+      gsap.set(vfxArr, {
+        x: 0,
+        y: 0,
+        scale: 0.45,
+        opacity: 0,
+        rotation: 0,
+        transformOrigin: "50% 50%",
       });
-      gsap.set(boxer, { transformOrigin: "44% 94%", rotation: 0, x: 0, y: 0 });
-      gsap.set(bag, { transformOrigin: "50% 4px", rotation: 0, x: 0, y: 0, scale: 1 });
-      gsap.set([box], { transformOrigin: "50% 50%" });
+      gsap.set(nameEl, { opacity: 0, y: 36, scale: 0.94, transformOrigin: "50% 50%" });
       gsap.set(root, { autoAlpha: 1 });
 
       const tl = gsap.timeline();
-      tl.fromTo(box, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.32, ease: "power2.out" })
-        .to(bag, { rotation: 4, duration: 0.48, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.04)
-        .to(boxer, { rotation: -6, x: -5, duration: 0.18, ease: "power2.in" }, ">0.06")
-        .to(fist, { x: fistBackX - 8, y: 9, rotation: 5, duration: 0.16, ease: "sine.inOut" }, "<")
-        .addLabel("hit")
+
+      tl.fromTo(
+        box,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.35, ease: "power2.out" },
+      )
         .to(
-          fist,
+          nameEl,
           {
-            x: fistContactX,
-            y: -1,
-            rotation: -9,
-            scale: 1.06,
-            duration: 0.1,
-            ease: "power3.in",
-          },
-          "hit"
-        )
-        .to(boxer, { rotation: 5, x: 8, duration: 0.11, ease: "power2.out" }, "hit+=0.02")
-        .to(
-          bag,
-          {
-            rotation: 12,
-            x: 7,
-            y: 3,
-            duration: 0.09,
-            ease: "power2.out",
-          },
-          "hit+=0.07"
-        )
-        .to(bag, { rotation: -5, x: 2, duration: 0.18, ease: "sine.out" }, "hit+=0.12")
-        .to(bag, { rotation: 0, x: 0, y: 0, duration: 0.35, ease: "elastic.out(1.15, 0.65)" }, "hit+=0.14")
-        .to(
-          fist,
-          {
-            x: isNarrow ? -20 : -30,
-            y: 4,
-            rotation: 0,
+            opacity: 1,
+            y: 0,
             scale: 1,
-            duration: 0.32,
-            ease: "power2.out",
+            duration: 0.82,
+            ease: "power3.out",
           },
-          "hit+=0.1"
+          "-=0.12",
         )
-        .to(boxer, { rotation: 0, x: 0, duration: 0.34, ease: "sine.out" }, "hit+=0.12");
+        .addLabel("burst", "+=0.12");
 
       vfxArr.forEach((el, i) => {
-        const b = burst(i);
+        const b = burst(i, vfxArr.length);
         tl.to(
+          el,
+          {
+            opacity: 1,
+            scale: 0.92 + (i % 3) * 0.06,
+            duration: 0.22,
+            ease: "back.out(1.55)",
+          },
+          `burst+=${i * 0.028}`,
+        ).to(
           el,
           {
             x: b.x,
             y: b.y,
-            rotation: b.rot * (i % 2 ? 1 : -1),
-            scale: 0.2 + Math.random() * 0.45,
+            rotation: b.rot,
+            scale: b.sc,
             opacity: 0,
-            duration: 0.85,
+            duration: 1.05 + Math.random() * 0.15,
             ease: "power3.out",
           },
-          "hit"
+          `burst+=${0.14 + i * 0.035}`,
         );
       });
 
-      tl.to({}, { duration: 0.55 }).to(root, {
+      tl.to(
+        nameEl,
+        {
+          opacity: 0.55,
+          scale: 0.985,
+          duration: 0.35,
+          ease: "power2.inOut",
+        },
+        "burst+=0.08",
+      ).to(
+        nameEl,
+        { opacity: 1, scale: 1, duration: 0.55, ease: "power2.out" },
+        "burst+=0.38",
+      );
+
+      tl.to({}, { duration: 0.35 }).to(root, {
         autoAlpha: 0,
-        duration: 0.48,
+        duration: 0.55,
         ease: "power2.inOut",
         onComplete: () => {
           window.clearTimeout(safetyRef.current);
@@ -282,7 +289,7 @@ export function SitePreloader() {
     <div
       ref={rootRef}
       data-site-preloader="true"
-      className="site-preloader pointer-events-auto fixed inset-0 isolate z-[2147483000] flex max-h-dvh w-full max-w-[100vw] items-center justify-center overflow-hidden bg-black [contain:layout_style_paint] will-change-transform transform-gpu [transform:translateZ(0)]"
+      className="site-preloader pointer-events-auto fixed inset-0 isolate z-[2147483000] flex max-h-dvh w-full max-w-[100vw] items-center justify-center overflow-hidden bg-black [contain:layout_style_paint] will-change-[opacity] transform-gpu before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_38%,rgba(16,185,129,0.12),transparent_55%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_115%,rgba(0,0,0,0.55),transparent_42%)]"
       style={{ zIndex: 2147483000, isolation: "isolate" as const }}
       role="status"
       aria-live="polite"
@@ -291,96 +298,41 @@ export function SitePreloader() {
     >
       <div
         ref={boxRef}
-        className="relative flex flex-col items-center justify-center px-4"
+        className="relative flex min-h-[min(52vh,440px)] w-full max-w-[min(92vw,560px)] flex-col items-center justify-center px-5"
         suppressHydrationWarning
       >
-        <div className="flex items-end justify-center gap-1 sm:gap-2">
-          {/* Силуэт: белый, безликий; акцент — только боксёрские перчатки */}
-          <div ref={boxerRef} className="relative z-10 w-[5.4rem] shrink-0 sm:w-[6.5rem]">
-            <div className="relative flex flex-col items-center">
-              <div
-                className="relative z-10 h-[2rem] w-[1.85rem] rounded-full bg-zinc-50 shadow-[0_0_0_1px_rgba(255,255,255,0.4),inset_0_-4px_10px_rgba(0,0,0,0.07)] sm:h-[2.35rem] sm:w-[2.05rem]"
-                aria-hidden
-              />
-              <div className="h-1 w-px bg-zinc-200/80" aria-hidden />
-              {/* Туловище: один цельный силуэт, без одежды/деталей */}
-              <div
-                className="-mt-px h-[3.1rem] w-[2.5rem] rounded-[1.15rem] bg-zinc-50 shadow-[0_0_0_1px_rgba(255,255,255,0.3),inset_0_-10px_14px_rgba(0,0,0,0.05)] sm:h-[3.5rem] sm:w-[2.7rem]"
-                aria-hidden
-              />
-              {/* Пассивная рука — лишь силуэт, без отдельной «перчатки» в фокусе */}
-              <div
-                className="pointer-events-none absolute bottom-[0.4rem] left-0.5 h-9 w-2.5 -rotate-[20deg] rounded-full bg-zinc-100/85 sm:bottom-[0.45rem] sm:left-0 sm:h-10"
-                aria-hidden
-              />
-            </div>
-            <div
-              ref={fistRef}
-              className="absolute bottom-[0.45rem] left-[0.9rem] z-20 flex items-end will-change-transform sm:bottom-2.5 sm:left-5"
-              aria-hidden
-            >
-              <div className="mb-0.5 h-2 w-8 origin-bottom-right -rotate-6 rounded-sm bg-zinc-50/95 sm:h-2.5 sm:w-9" />
-              <div className="relative -ml-0.5 h-[1.7rem] w-[1.55rem] rounded-b-[1.1rem] rounded-t-md bg-zinc-50 shadow-[0_0_0_1px_rgba(0,0,0,0.14),inset_0_-4px_8px_rgba(0,0,0,0.12)] sm:h-[1.85rem] sm:w-[1.65rem]">
-                <div className="absolute left-0.5 right-0.5 top-1.5 h-1.5 rounded-sm bg-gradient-to-b from-red-500 to-red-700" />
-                <div className="absolute bottom-0.5 left-1 right-1 h-0.5 rounded-full bg-zinc-300/90" />
-              </div>
-            </div>
-            <div
-              className="pointer-events-none absolute -bottom-1 left-1/2 flex -translate-x-1/2 gap-1.5"
-              aria-hidden
-            >
-              <div className="h-2.5 w-1.5 rounded-b-sm bg-zinc-100/70" />
-              <div className="h-2.5 w-1.5 rounded-b-sm bg-zinc-100/70" />
-            </div>
-          </div>
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_50%,rgba(24,24,27,0.35),transparent_70%)]"
+          aria-hidden
+        />
 
-          <div className="relative -ml-1 flex flex-col items-center sm:ml-0">
-            <div ref={bagRef} className="will-change-transform">
-              <div className="mx-auto mb-0.5 flex w-4 flex-col items-center sm:w-5" aria-hidden>
-                <div className="h-0.5 w-4 rounded-sm bg-zinc-500 sm:w-5" />
-                <div className="h-1 w-px bg-zinc-500" />
-                <div className="h-0.5 w-2.5 rounded-sm bg-zinc-600" />
-              </div>
-              <div className="relative w-[3.6rem] overflow-hidden rounded-2xl border-2 border-emerald-500/45 bg-gradient-to-b from-zinc-800 via-zinc-900 to-black shadow-[0_0_0_1px_rgb(16_185_129/0.2),0_0_28px_-6px_rgb(16_185_129/0.4),inset_0_-18px_22px_rgba(0,0,0,0.55)] sm:w-[4.2rem] sm:rounded-3xl">
-                <div
-                  className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.12)_2px,rgba(0,0,0,0.12)_3px)] opacity-50"
-                  aria-hidden
-                />
-                <div
-                  className="pointer-events-none absolute left-0 right-0 top-0 h-1/3 bg-gradient-to-b from-white/6 to-transparent"
-                  aria-hidden
-                />
-                <div
-                  ref={fxRef}
-                  className="absolute left-1/2 top-[40%] h-[60%] w-[92%] -translate-x-1/2 -translate-y-1/2"
-                >
-                  {FX_WORDS.map((word, i) => (
-                    <span
-                      key={word}
-                      className="pre-fx font-display absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] font-extrabold uppercase leading-none tracking-[0.16em] text-emerald-300/95 [text-shadow:0_0_12px_rgb(16_185_129/0.55)] sm:text-[8px] md:text-[9px]"
-                      style={{ marginLeft: `${(i % 3) * 12 - 12}px`, marginTop: `${Math.floor(i / 3) * 9 - 6}px` }}
-                    >
-                      {word}
-                    </span>
-                  ))}
-                  {Array.from({ length: DOLLAR_MARKS }, (_, i) => (
-                    <span
-                      key={i}
-                      className="pre-fx font-mono font-black absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.7rem] leading-none text-amber-200/95 [text-shadow:0_0_8px_rgba(250,204,21,0.45)] sm:text-[0.85rem]"
-                      style={{
-                        marginLeft: `${(i - DOLLAR_MARKS / 2) * 4 + (i % 2) * 2}px`,
-                        marginTop: `${(i % 4) * 2 - 3}px`,
-                      }}
-                      aria-hidden
-                    >
-                      $
-                    </span>
-                  ))}
-                </div>
-                <div className="relative aspect-[1/1.4] w-full" aria-hidden />
-              </div>
-            </div>
-          </div>
+        <p
+          ref={nameRef}
+          className="relative z-20 max-w-[18ch] text-center font-display text-[clamp(1.65rem,7vw,3.35rem)] font-bold leading-[1.05] tracking-[0.03em] text-white [text-shadow:0_2px_48px_rgba(0,0,0,0.65),0_0_80px_rgba(16,185,129,0.15)]"
+        >
+          {displayName}
+        </p>
+
+        <div
+          ref={fxRef}
+          className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[min(78vmin,560px)] w-[min(94vw,620px)] -translate-x-1/2 -translate-y-1/2"
+          aria-hidden
+        >
+          {FX_WORDS.map((word, i) => {
+            const emphasize = word === "УСПЕХ" || word === "ДЕНЬГИ";
+            return (
+              <span
+                key={`${word}-${i}`}
+                className={`pre-fx font-display absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-extrabold uppercase leading-none tracking-[0.14em] sm:tracking-[0.18em] ${
+                  emphasize
+                    ? "text-[clamp(13px,3.6vmin,22px)] text-emerald-300 [text-shadow:0_0_24px_rgb(52_211_153/0.55)]"
+                    : "text-[clamp(11px,3vmin,17px)] text-zinc-400/95 [text-shadow:0_0_16px_rgba(255,255,255,0.12)]"
+                }`}
+              >
+                {word}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

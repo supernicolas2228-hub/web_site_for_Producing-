@@ -11,13 +11,13 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <ContactSocial />
       <About />
       <ForWho />
       <WhatIGive />
       <CasesReviews />
       <Pricing />
       <FAQSection />
+      <ContactSocial />
     </>
   );
 }
