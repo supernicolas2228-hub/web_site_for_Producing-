@@ -23,9 +23,10 @@ const nextConfig = isBegetStatic
       typescript: { ignoreBuildErrors: true },
       eslint: { ignoreDuringBuilds: true },
       productionBrowserSourceMaps: false,
+      /* webpackBuildWorker: отдельные процессы OOM на слабой машине/мало RAM — один процесс. */
       experimental: {
         cpus: 1,
-        webpackBuildWorker: true,
+        webpackBuildWorker: false,
       },
     }
   : {

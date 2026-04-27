@@ -12,9 +12,9 @@ export const site = {
 } as const;
 
 export const hero = {
-  /** Первый экран сразу после прелоадера: «Система, которая ведёт к доходу». Первое фото сюда — подмени `boxer-photo.jpg` в public/images при необходимости. */
-  portraitSrc: "/images/boxer-photo.jpg",
-  portraitCoverClass: "object-cover object-center sm:object-[center_32%]",
+  /** Первый экран: «Система, которая ведёт к доходу». Файл в `public/images/boxer-photo.png`. */
+  portraitSrc: "/images/boxer-photo.png",
+  portraitCoverClass: "object-cover object-[center_42%] sm:object-[center_38%]",
   portraitAlt: "Кирилл Санчаев",
   /** Фон первого экрана — картинка в public/images. */
   backdropSrc: "/images/hero-backdrop-castle.png",
@@ -31,13 +31,13 @@ export const hero = {
   ctaHint: "Ниже — все форматы и цены в одном месте, плюс ответы на частые вопросы.",
 } as const;
 
-/** Сразу после Hero: фото «на связи» + соцсети. Второе фото — подмени `kirill-hero-strategist.png` в public/images при необходимости. */
+/** Отдельный блок сразу после Hero: фото + соцсети. Файл в `public/images/kirill-hero-strategist.png`. */
 export const contactSection = {
   id: "contact" as const,
   title: "Связь и соцсети",
   hint: "Пиши в удобный канал — отвечу, подскажу следующий шаг.",
   portraitSrc: "/images/kirill-hero-strategist.png",
-  portraitCoverClass: "object-cover object-[center_22%] sm:object-[center_15%]",
+  portraitCoverClass: "object-cover object-[center_35%] sm:object-[center_28%]",
   portraitAlt: "Кирилл Санчаев — на связи",
 } as const;
 

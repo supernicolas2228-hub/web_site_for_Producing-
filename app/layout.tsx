@@ -61,7 +61,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" translate="no" dir="ltr" className="notranslate" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.bunny.net" crossOrigin="anonymous" />
-        <link rel="preload" as="image" href="/images/boxer-photo.jpg" />
+        <link rel="preload" as="image" href="/images/boxer-photo.png" />
+        <link rel="preload" as="image" href="/images/kirill-hero-strategist.png" />
         <link rel="preload" as="image" href="/images/hero-backdrop-castle.png" />
       </head>
       <body

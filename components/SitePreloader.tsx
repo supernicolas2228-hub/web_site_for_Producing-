@@ -4,13 +4,31 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 
-const SESSION_KEY = "ks_preloader_done_v4";
-const FX_WORDS = ["УСПЕХ", "ДЕНЬГИ", "ПОБЕДА", "РЕЗУЛЬТАТ", "РОСТ", "СИЛА"] as const;
-const MAX_MS = 3600;
-const COINS = 8;
+const SESSION_KEY = "ks_preloader_done_v5";
+const FX_WORDS = [
+  "УСПЕХ",
+  "ДЕНЬГИ",
+  "ДОХОД",
+  "ПОБЕДА",
+  "РЕЗУЛЬТАТ",
+  "РОСТ",
+] as const;
+const MAX_MS = 5600;
+const DOLLAR_MARKS = 12;
+
+/** Показать сцену снова: открой главную с `?replayLoader` (например для проверки после деплоя). */
+function wantsReplayLoader(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return new URLSearchParams(window.location.search).has("replayLoader");
+  } catch {
+    return false;
+  }
+}
 
 function getSkipSession(): boolean {
   if (typeof window === "undefined") return false;
+  if (wantsReplayLoader()) return false;
   try {
     return window.sessionStorage.getItem(SESSION_KEY) === "1";
   } catch {
@@ -40,15 +58,15 @@ function whenDomReady(fn: () => void) {
 }
 
 /**
- * Удар по груше + взрыв текста. Рендер через portal в `document.body`, плюс
- * `html.site-preloader-active` скрывает #site-root — иначе next/image (Hero) в
- * части WebView/браузеров рисуется поверх z-index портала.
+ * Безликий белый боксёр (только силуэт + перчатки), удар по груше, взлёт $ и слов.
+ * Portal в `document.body`, `html.site-preloader-active` скрывает #site-root.
  */
 export function SitePreloader() {
   const [active, setActive] = useState(true);
   const [mountTarget, setMountTarget] = useState<HTMLElement | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const boxerRef = useRef<HTMLDivElement>(null);
   const fistRef = useRef<HTMLDivElement>(null);
   const bagRef = useRef<HTMLDivElement>(null);
   const fxRef = useRef<HTMLDivElement>(null);
@@ -62,7 +80,6 @@ export function SitePreloader() {
       return;
     }
     if (typeof document === "undefined") return;
-    /* До setState: чтобы первый кадр после гидратации не показывал Hero поверх. */
     document.documentElement.classList.add("site-preloader-active");
     setMountTarget(document.body);
   }, []);
@@ -100,10 +117,11 @@ export function SitePreloader() {
       if (killedRef.current) return;
       const root = rootRef.current;
       const box = boxRef.current;
+      const boxer = boxerRef.current;
       const fist = fistRef.current;
       const bag = bagRef.current;
       const fx = fxRef.current;
-      if (!root || !box || !fist || !bag || !fx) {
+      if (!root || !box || !boxer || !fist || !bag || !fx) {
         endAndHide();
         return;
       }
@@ -115,7 +133,7 @@ export function SitePreloader() {
       }
 
       const vfxArr = Array.from(vfxEls);
-      gsapTargetsRef.current = [root, box, fist, bag, ...vfxArr];
+      gsapTargetsRef.current = [root, box, boxer, fist, bag, ...vfxArr];
 
       const lock = () => {
         elBody.style.overflow = "hidden";
@@ -144,70 +162,123 @@ export function SitePreloader() {
       const w = window.innerWidth;
       const isNarrow = w < 640;
       const burst = (i: number) => {
-        const angle = (i / vfxArr.length) * Math.PI * 2 + Math.random() * 0.45;
-        const r = (isNarrow ? 0.45 : 1) * (160 + Math.random() * 220);
-        return { x: Math.cos(angle) * r, y: Math.sin(angle) * r - 22, rot: 140 + Math.random() * 220 };
+        const angle = (i / Math.max(vfxArr.length, 1)) * Math.PI * 2 + Math.random() * 0.5;
+        const r = (isNarrow ? 0.5 : 1) * (140 + Math.random() * 240);
+        return { x: Math.cos(angle) * r, y: Math.sin(angle) * r - 28, rot: 120 + Math.random() * 240 };
       };
 
-      gsap.set(vfxArr, { x: 0, y: 0, scale: 0.85, opacity: 1, rotation: 0, transformOrigin: "50% 50%" });
-      gsap.set(fist, { x: isNarrow ? -44 : -72, transformOrigin: "20% 80%" });
+      const fistBackX = isNarrow ? -56 : -88;
+      const fistContactX = isNarrow ? 26 : 36;
+
+      gsap.set(vfxArr, { x: 0, y: 0, scale: 0.75, opacity: 1, rotation: 0, transformOrigin: "50% 50%" });
+      gsap.set(fist, {
+        x: fistBackX,
+        y: 6,
+        scale: 1,
+        rotation: -4,
+        transformOrigin: "10% 90%",
+      });
+      gsap.set(boxer, { transformOrigin: "42% 92%", rotation: 0, x: 0, y: 0 });
       gsap.set(bag, { transformOrigin: "50% 2px", rotation: 0, x: 0, y: 0, scale: 1 });
       gsap.set([box], { transformOrigin: "50% 50%" });
       gsap.set(root, { autoAlpha: 1 });
 
-      const idleSwing = 2.2;
       const tl = gsap.timeline();
       tl.fromTo(
         box,
-        { autoAlpha: 0, y: 16 },
-        { autoAlpha: 1, y: 0, duration: 0.38, ease: "power2.out" }
+        { autoAlpha: 0, y: 18 },
+        { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }
       )
+        /* груша до удара: раскачивание, не статика */
         .to(
           bag,
-          { rotation: idleSwing, duration: 0.4, yoyo: true, repeat: 1, ease: "sine.inOut" },
-          0.05
+          { rotation: 5, duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" },
+          0.06
         )
-        .addLabel("punch", 0.85)
+        .addLabel("windup", ">-0.02")
         .to(
-          bag,
-          { rotation: -idleSwing * 0.6, duration: 0.35, yoyo: true, repeat: 1, ease: "sine.inOut" },
-          "punch"
+          boxer,
+          { rotation: isNarrow ? -6 : -8, x: isNarrow ? -4 : -8, duration: 0.22, ease: "power2.in" },
+          "windup"
         )
         .to(
           fist,
-          { x: isNarrow ? 8 : 12, y: 2, scale: 1.04, duration: 0.11, ease: "power3.in" },
-          "punch+=0.25"
+          { x: fistBackX - (isNarrow ? 4 : 10), y: 10, rotation: 2, duration: 0.2, ease: "sine.inOut" },
+          "windup"
+        )
+        .addLabel("punch", ">0.02")
+        .to(
+          fist,
+          {
+            x: fistContactX,
+            y: -2,
+            rotation: isNarrow ? -10 : -12,
+            scale: 1.12,
+            duration: 0.1,
+            ease: "power4.in",
+          },
+          "punch"
         )
         .to(
-          bag,
-          { rotation: 7, x: 6, y: 1, scale: 1.02, duration: 0.07, ease: "power2.in" },
-          "punch+=0.28"
+          boxer,
+          { rotation: isNarrow ? 5 : 7, x: isNarrow ? 8 : 14, duration: 0.1, ease: "power2.in" },
+          "punch+=0.02"
         )
-        .addLabel("hit", "punch+=0.34")
+        .addLabel("hit", "punch+=0.09")
         .to(
           bag,
-          { rotation: -4.5, x: 3, y: 0, duration: 0.12, ease: "sine.inOut" },
+          {
+            rotation: isNarrow ? 18 : 22,
+            x: isNarrow ? 8 : 12,
+            y: 4,
+            scaleX: 0.96,
+            scaleY: 1.04,
+            duration: 0.06,
+            ease: "power1.in",
+          },
           "hit"
         )
         .to(
           bag,
-          { rotation: 2.2, y: 0, x: 0, duration: 0.1, ease: "sine.inOut" },
+          { scaleX: 1, scaleY: 1, duration: 0.12, ease: "sine.out" },
+          "hit+=0.06"
+        )
+        .to(
+          bag,
+          { rotation: -11, x: 4, duration: 0.14, ease: "sine.inOut" },
           "hit+=0.1"
         )
         .to(
           bag,
-          { rotation: -0.6, y: 0, duration: 0.2, ease: "sine.inOut" },
+          { rotation: 6, x: 2, duration: 0.16, ease: "sine.inOut" },
           "hit+=0.2"
         )
         .to(
           bag,
-          { rotation: 0, y: 0, x: 0, scale: 1, duration: 0.22, ease: "sine.out" },
-          "hit+=0.35"
+          { rotation: -2.5, x: 0, y: 0, duration: 0.2, ease: "sine.inOut" },
+          "hit+=0.3"
+        )
+        .to(
+          bag,
+          { rotation: 0, duration: 0.35, ease: "sine.out" },
+          "hit+=0.45"
         )
         .to(
           fist,
-          { x: isNarrow ? -18 : -32, y: 0, scale: 1, duration: 0.2, ease: "power2.out" },
+          {
+            x: isNarrow ? -18 : -28,
+            y: 4,
+            rotation: 0,
+            scale: 1,
+            duration: 0.28,
+            ease: "power2.out",
+          },
           "hit+=0.12"
+        )
+        .to(
+          boxer,
+          { rotation: 0, x: 0, y: 0, duration: 0.4, ease: "sine.inOut" },
+          "hit+=0.1"
         );
 
       vfxArr.forEach((el, i) => {
@@ -218,18 +289,18 @@ export function SitePreloader() {
             x: b.x,
             y: b.y,
             rotation: b.rot * (i % 2 ? 1 : -1),
-            scale: 0.3 + Math.random() * 0.35,
+            scale: 0.2 + Math.random() * 0.45,
             opacity: 0,
-            duration: 0.9,
+            duration: 0.85,
             ease: "power3.out",
           },
           "hit"
         );
       });
 
-      tl.to({}, { duration: 0.75 }).to(root, {
+      tl.to({}, { duration: 0.72 }).to(root, {
         autoAlpha: 0,
-        duration: 0.55,
+        duration: 0.52,
         ease: "power2.inOut",
         onComplete: () => {
           window.clearTimeout(safetyRef.current);
@@ -275,60 +346,54 @@ export function SitePreloader() {
         className="relative flex flex-col items-center justify-center px-4"
         suppressHydrationWarning
       >
-        <div className="flex items-end justify-center gap-0 sm:gap-1">
-          {/* Белый силуэт: безликий, в перчатках */}
-          <div className="relative z-10 w-[5.2rem] shrink-0 sm:w-[6.2rem]">
+        <div className="flex items-end justify-center gap-1 sm:gap-2">
+          {/* Силуэт: белый, безликий; акцент — только боксёрские перчатки */}
+          <div ref={boxerRef} className="relative z-10 w-[5.4rem] shrink-0 sm:w-[6.5rem]">
             <div className="relative flex flex-col items-center">
-              {/* Голова — пустой эллипс, без черт лица */}
               <div
-                className="relative z-10 h-[2.1rem] w-[1.9rem] rounded-full bg-zinc-100 shadow-[0_0_0_1px_rgba(255,255,255,0.35),inset_0_-6px_12px_rgba(0,0,0,0.08)] sm:h-[2.4rem] sm:w-[2.1rem]"
+                className="relative z-10 h-[2rem] w-[1.85rem] rounded-full bg-zinc-50 shadow-[0_0_0_1px_rgba(255,255,255,0.4),inset_0_-4px_10px_rgba(0,0,0,0.07)] sm:h-[2.35rem] sm:w-[2.05rem]"
                 aria-hidden
               />
-              {/* Туловище */}
+              <div className="h-1 w-px bg-zinc-200/80" aria-hidden />
+              {/* Туловище: один цельный силуэт, без одежды/деталей */}
               <div
-                className="-mt-0.5 h-[3.2rem] w-[2.4rem] rounded-[1.1rem] bg-zinc-100 shadow-[0_0_0_1px_rgba(255,255,255,0.25),inset_0_-10px_16px_rgba(0,0,0,0.06)] sm:h-[3.6rem] sm:w-[2.6rem]"
+                className="-mt-px h-[3.1rem] w-[2.5rem] rounded-[1.15rem] bg-zinc-50 shadow-[0_0_0_1px_rgba(255,255,255,0.3),inset_0_-10px_14px_rgba(0,0,0,0.05)] sm:h-[3.5rem] sm:w-[2.7rem]"
                 aria-hidden
               />
-              {/* Задняя рука (силуэт) */}
+              {/* Пассивная рука — лишь силуэт, без отдельной «перчатки» в фокусе */}
               <div
-                className="pointer-events-none absolute bottom-[0.35rem] left-0.5 h-9 w-2.5 -rotate-[18deg] rounded-full bg-zinc-200/80 sm:bottom-1 sm:left-0 sm:h-10"
+                className="pointer-events-none absolute bottom-[0.4rem] left-0.5 h-9 w-2.5 -rotate-[20deg] rounded-full bg-zinc-100/85 sm:bottom-[0.45rem] sm:left-0 sm:h-10"
                 aria-hidden
               />
             </div>
-            {/* Ударная рука + перчатка (движется) */}
             <div
               ref={fistRef}
-              className="absolute bottom-[0.5rem] left-[1.1rem] z-20 flex items-end will-change-transform sm:bottom-2 sm:left-[1.35rem]"
+              className="absolute bottom-[0.45rem] left-[0.9rem] z-20 flex items-end will-change-transform sm:bottom-2.5 sm:left-5"
               aria-hidden
             >
-              <div className="mb-0.5 h-2 w-7 origin-right -rotate-6 rounded-sm bg-zinc-100/90 sm:h-2.5 sm:w-8" />
-              <div className="relative -ml-0.5 h-[1.6rem] w-[1.45rem] rounded-b-xl rounded-t-md bg-zinc-50 shadow-[0_0_0_1px_rgba(0,0,0,0.12),inset_0_-4px_6px_rgba(0,0,0,0.15)] sm:h-[1.75rem] sm:w-[1.6rem]">
-                <div className="absolute left-0.5 right-0.5 top-1.5 h-1.5 rounded-sm bg-gradient-to-b from-red-500 to-red-700 sm:top-1.5" />
-                <div className="absolute bottom-0.5 left-1 right-1 h-0.5 rounded-full bg-zinc-300/80" />
+              <div className="mb-0.5 h-2 w-8 origin-bottom-right -rotate-6 rounded-sm bg-zinc-50/95 sm:h-2.5 sm:w-9" />
+              <div className="relative -ml-0.5 h-[1.7rem] w-[1.55rem] rounded-b-[1.1rem] rounded-t-md bg-zinc-50 shadow-[0_0_0_1px_rgba(0,0,0,0.14),inset_0_-4px_8px_rgba(0,0,0,0.12)] sm:h-[1.85rem] sm:w-[1.65rem]">
+                <div className="absolute left-0.5 right-0.5 top-1.5 h-1.5 rounded-sm bg-gradient-to-b from-red-500 to-red-700" />
+                <div className="absolute bottom-0.5 left-1 right-1 h-0.5 rounded-full bg-zinc-300/90" />
               </div>
             </div>
-            {/* Бёдра/стойка (лёгкий силуэт) */}
             <div
               className="pointer-events-none absolute -bottom-1 left-1/2 flex -translate-x-1/2 gap-1.5"
               aria-hidden
             >
-              <div className="h-3 w-1.5 rounded-b-md bg-zinc-100/60 sm:h-3.5" />
-              <div className="h-3 w-1.5 rounded-b-md bg-zinc-100/60 sm:h-3.5" />
+              <div className="h-2.5 w-1.5 rounded-b-sm bg-zinc-100/70" />
+              <div className="h-2.5 w-1.5 rounded-b-sm bg-zinc-100/70" />
             </div>
           </div>
 
-          <div className="relative -ml-1.5 flex flex-col items-center sm:-ml-0">
-            {/* Крепёж + груша: качается вокруг верхней точки */}
+          <div className="relative -ml-1 flex flex-col items-center sm:ml-0">
             <div ref={bagRef} className="will-change-transform">
-              <div
-                className="mx-auto mb-0.5 flex w-4 flex-col items-center sm:w-5"
-                aria-hidden
-              >
+              <div className="mx-auto mb-0.5 flex w-4 flex-col items-center sm:w-5" aria-hidden>
                 <div className="h-0.5 w-4 rounded-sm bg-zinc-500 sm:w-5" />
                 <div className="h-1 w-px bg-zinc-500" />
                 <div className="h-0.5 w-2.5 rounded-sm bg-zinc-600" />
               </div>
-              <div className="relative w-[3.5rem] overflow-hidden rounded-2xl border-2 border-emerald-500/45 bg-gradient-to-b from-zinc-800 via-zinc-900 to-black shadow-[0_0_0_1px_rgb(16_185_129/0.2),0_0_28px_-6px_rgb(16_185_129/0.4),inset_0_-18px_22px_rgba(0,0,0,0.55)] sm:w-[4.1rem] sm:rounded-3xl">
+              <div className="relative w-[3.6rem] overflow-hidden rounded-2xl border-2 border-emerald-500/45 bg-gradient-to-b from-zinc-800 via-zinc-900 to-black shadow-[0_0_0_1px_rgb(16_185_129/0.2),0_0_28px_-6px_rgb(16_185_129/0.4),inset_0_-18px_22px_rgba(0,0,0,0.55)] sm:w-[4.2rem] sm:rounded-3xl">
                 <div
                   className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.12)_2px,rgba(0,0,0,0.12)_3px)] opacity-50"
                   aria-hidden
@@ -341,26 +406,26 @@ export function SitePreloader() {
                   ref={fxRef}
                   className="absolute left-1/2 top-[40%] h-[60%] w-[92%] -translate-x-1/2 -translate-y-1/2"
                 >
-                  {FX_WORDS.map((w, i) => (
+                  {FX_WORDS.map((word, i) => (
                     <span
-                      key={w}
+                      key={word}
                       className="pre-fx font-display absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] font-extrabold uppercase leading-none tracking-[0.16em] text-emerald-300/95 [text-shadow:0_0_12px_rgb(16_185_129/0.55)] sm:text-[8px] md:text-[9px]"
-                      style={{ marginLeft: `${(i % 3) * 14 - 14}px`, marginTop: `${Math.floor(i / 3) * 10 - 8}px` }}
+                      style={{ marginLeft: `${(i % 3) * 12 - 12}px`, marginTop: `${Math.floor(i / 3) * 9 - 6}px` }}
                     >
-                      {w}
+                      {word}
                     </span>
                   ))}
-                  {Array.from({ length: COINS }, (_, i) => (
+                  {Array.from({ length: DOLLAR_MARKS }, (_, i) => (
                     <span
                       key={i}
-                      className="pre-fx absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-base leading-none sm:text-lg"
+                      className="pre-fx font-mono font-black absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.7rem] leading-none text-amber-200/95 [text-shadow:0_0_8px_rgba(250,204,21,0.45)] sm:text-[0.85rem]"
                       style={{
-                        marginLeft: `${(i - COINS / 2) * 5}px`,
-                        marginTop: `${(i % 4) * 3 - 4}px`,
+                        marginLeft: `${(i - DOLLAR_MARKS / 2) * 4 + (i % 2) * 2}px`,
+                        marginTop: `${(i % 4) * 2 - 3}px`,
                       }}
                       aria-hidden
                     >
-                      💵
+                      $
                     </span>
                   ))}
                 </div>
