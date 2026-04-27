@@ -57,8 +57,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     url: publicUrl,
   };
 
+  const deployRef = process.env.NEXT_PUBLIC_DEPLOY_REF?.trim() ?? "";
+  const gitSha = process.env.NEXT_PUBLIC_GIT_SHA?.trim() ?? "";
+
   return (
-    <html lang="ru" translate="no" dir="ltr" className="notranslate" suppressHydrationWarning>
+    <html
+      lang="ru"
+      translate="no"
+      dir="ltr"
+      className="notranslate"
+      suppressHydrationWarning
+      data-deploy-ref={deployRef || undefined}
+      data-git-sha={gitSha || undefined}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.bunny.net" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/images/boxer-photo.png" />

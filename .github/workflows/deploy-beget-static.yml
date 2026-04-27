@@ -1,0 +1,76 @@
+# После добавления секретов (см. конец файла) каждый push в main собирает статику и выкладывает на Beget.
+name: Deploy static to Beget
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-beget-static
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export (Beget)
+        env:
+          BEGET_STATIC: "1"
+          NEXT_PUBLIC_STATIC_EXPORT: "1"
+          NEXT_PUBLIC_SITE_URL: https://sanchaevkirill.ru
+          NEXT_PUBLIC_DEPLOY_REF: ${{ github.sha }}
+          NEXT_PUBLIC_GIT_SHA: ${{ github.sha }}
+          DATABASE_URL: file:./dev.db
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: node scripts/build-beget-static.cjs
+
+      - name: Pack out/
+        run: tar -czf beget-out.tar.gz -C out .
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.BEGET_SSH_PRIVATE_KEY }}
+
+      - name: Trust Beget host key
+        env:
+          BEGET_SSH_HOST: ${{ secrets.BEGET_SSH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$BEGET_SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload tarball
+        env:
+          TARGET: ${{ secrets.BEGET_SSH_USER }}@${{ secrets.BEGET_SSH_HOST }}
+        run: scp beget-out.tar.gz "${TARGET}:~/beget-out.tar.gz"
+
+      - name: Unpack to public_html
+        env:
+          TARGET: ${{ secrets.BEGET_SSH_USER }}@${{ secrets.BEGET_SSH_HOST }}
+        run: |
+          ssh "$TARGET" 'set -e
+          for d in "$HOME/supernh5.beget.tech/public_html" "$HOME/sanchaevkirill.ru/public_html"; do
+            mkdir -p "$d"
+            rm -rf "${d:?}"/*
+            tar -xzf "$HOME/beget-out.tar.gz" -C "$d"
+            echo "ok: $d"
+          done
+          rm -f "$HOME/beget-out.tar.gz"'
+
+# Обязательные секреты репозитория (Settings → Secrets and variables → Actions):
+#   BEGET_SSH_PRIVATE_KEY — приватный ключ SSH (вся строка BEGIN…END)
+#   BEGET_SSH_HOST        — хост Beget, например u123456.freeshell.beget.tech
+#   BEGET_SSH_USER        — логин SSH (часто совпадает с аккаунтом Beget)
+# Тот же ключ, что для локального npm run deploy:beget (scp на сервер).
