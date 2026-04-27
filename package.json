@@ -18,6 +18,7 @@
     "deploy": "npm run migrate:deploy && npm run build",
     "deploy:vps": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-vps.ps1",
     "deploy:beget": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-beget.ps1",
+    "deploy:beget:upload": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-beget.ps1 -UploadOnly",
     "ship": "powershell -ExecutionPolicy Bypass -File ./scripts/ship.ps1",
     "pack:standalone": "powershell -ExecutionPolicy Bypass -File ./scripts/package-standalone.ps1",
     "release:vps": "powershell -ExecutionPolicy Bypass -File ./scripts/package-standalone.ps1",

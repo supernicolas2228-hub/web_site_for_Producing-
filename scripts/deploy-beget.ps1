@@ -2,6 +2,9 @@
 # Локально: задайте в сессии или в .env (не коммитьте пароли):
 #   BEGET_SSH="user@host"  ИЛИ  BEGET_SSH_USER + BEGET_SSH_HOST
 # Опционально: NEXT_PUBLIC_DEPLOY_REF для метки в подвале
+# Только заливка готового архива (без сборки на этом ПК):  -UploadOnly  (ожидается ./beget-out.tar.gz)
+param([switch]$UploadOnly)
+
 $ErrorActionPreference = "Stop"
 $here = Split-Path $PSScriptRoot -Parent
 Set-Location $here
@@ -36,28 +39,37 @@ if (-not [Environment]::GetEnvironmentVariable("NEXT_PUBLIC_SITE_URL", "Process"
   [Environment]::SetEnvironmentVariable("NEXT_PUBLIC_SITE_URL", "https://sanchaevkirill.ru", "Process")
 }
 
-Write-Host "=== static build (Beget) ==="
-& node (Join-Path $here "scripts\build-beget-static.cjs")
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-$out = Join-Path $here "out"
-if (-not (Test-Path $out)) {
-  Write-Error "Missing out/ after build."
-  exit 1
-}
-
 $tarball = Join-Path $here "beget-out.tar.gz"
-if (Test-Path $tarball) { Remove-Item $tarball -Force }
-# Windows 10+ / Server 2016+ : tar в PATH
-$tar = Get-Command tar -ErrorAction SilentlyContinue
-if (-not $tar) {
-  Write-Error "tar not found. Install Git for Windows or use Windows 10+."
-  exit 1
+
+if ($UploadOnly) {
+  Write-Host "=== UploadOnly: upload existing beget-out.tar.gz (no local build) ==="
+  if (-not (Test-Path $tarball)) {
+    Write-Error "Missing beget-out.tar.gz in project root. Add archive or run deploy:beget without -UploadOnly."
+    exit 1
+  }
+} else {
+  Write-Host "=== static build (Beget) ==="
+  & node (Join-Path $here "scripts\build-beget-static.cjs")
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  $out = Join-Path $here "out"
+  if (-not (Test-Path $out)) {
+    Write-Error "Missing out/ after build."
+    exit 1
+  }
+
+  if (Test-Path $tarball) { Remove-Item $tarball -Force }
+  # Windows 10+ / Server 2016+ : tar в PATH
+  $tar = Get-Command tar -ErrorAction SilentlyContinue
+  if (-not $tar) {
+    Write-Error "tar not found. Install Git for Windows or use Windows 10+."
+    exit 1
+  }
+  Push-Location $here
+  & tar -czf $tarball -C $out .
+  Pop-Location
+  Write-Host "=== created $tarball ==="
 }
-Push-Location $here
-& tar -czf $tarball -C $out .
-Pop-Location
-Write-Host "=== created $tarball ==="
 
 $target = [Environment]::GetEnvironmentVariable("BEGET_SSH", "Process")
 $user = [Environment]::GetEnvironmentVariable("BEGET_SSH_USER", "Process")
@@ -100,16 +112,19 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
-# Папки public_html: по умолчанию — техдомен + .ru. В .env: BEGET_UNPACK_PATHS=...|... (как $HOME/домен/public_html, разделитель |).
 $unpackPaths = [Environment]::GetEnvironmentVariable("BEGET_UNPACK_PATHS", "Process")
 if ($unpackPaths) {
-  $parts = $unpackPaths -split '\|' | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
-  $quoted = ($parts | ForEach-Object { "`"$_`"" }) -join " "
+  $parts = @($unpackPaths.Split("|") | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" })
+  $qch = [char]34
+  $quoted = ($parts | ForEach-Object { $qch + $_ + $qch }) -join " "
 } else {
-  $quoted = '"$HOME/supernh5.beget.tech/public_html" "$HOME/sanchaevkirill.ru/public_html"'
+  $dq = [char]34
+  $bh = "`$HOME"
+  $quoted = "${dq}${bh}/supernh5.beget.tech/public_html${dq} ${dq}${bh}/sanchaevkirill.ru/public_html${dq}"
 }
-# One bash for-loop; $ is literal for remote shell (see string concat above).
-$remoteCmd = 'for d in ' + $quoted + '; do mkdir -p "$d" && rm -rf "$d"/* && tar -xzf "$HOME/beget-out.tar.gz" -C "$d" && echo "unpacked: $d"; done; rm -f "$HOME/beget-out.tar.gz"'
+$unpackTplPath = Join-Path $here "scripts\beget-unpack-remote.template.sh"
+$unpackTpl = [System.IO.File]::ReadAllText($unpackTplPath, [System.Text.UTF8Encoding]::new($false))
+$remoteCmd = $unpackTpl.Replace("__PATHS_Q__", $quoted).Trim()
 
 Write-Host "=== ssh: unpack to public_html ==="
 if ($begetId) {

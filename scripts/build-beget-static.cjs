@@ -74,17 +74,18 @@ if (!process.env.NEXT_PUBLIC_DEPLOY_REF) {
   const pad = (n) => String(n).padStart(2, "0");
   process.env.NEXT_PUBLIC_DEPLOY_REF = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-if (!process.env.NODE_OPTIONS) {
-  /* Статик-экспорт на Windows: воркерам Next нужен запас; 8192 + webpackBuildWorker: false в next.config. */
-  process.env.NODE_OPTIONS = "--max-old-space-size=8192";
-}
+const heapMb =
+  Number(process.env.BEGET_NODE_HEAP_MB) > 0 ? Number(process.env.BEGET_NODE_HEAP_MB) : 8192;
+const nodeOptsHeap = `--max-old-space-size=${heapMb}`;
+process.env.NODE_OPTIONS = nodeOptsHeap;
 
 const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
 let exitCode = 0;
 try {
+  /* NODE_OPTIONS последним — иначе .env может задать крошечный heap и Prisma/Next падают по OOM. */
   const r = spawnSync(npmCmd, ["run", "build"], {
     stdio: "inherit",
-    env: { ...process.env, FORCE_COLOR: "0" },
+    env: { ...process.env, FORCE_COLOR: "0", NODE_OPTIONS: nodeOptsHeap },
     shell: process.platform === "win32",
   });
   if (r.error) {
