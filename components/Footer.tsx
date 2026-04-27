@@ -5,6 +5,11 @@ import { useRef } from "react";
 import { site } from "@/config/content";
 import { easeFloat, easePremium, fadeUp, staggerSnappy } from "@/lib/motion";
 
+const deployRef =
+  typeof process !== "undefined" && process.env.NEXT_PUBLIC_DEPLOY_REF?.trim()
+    ? process.env.NEXT_PUBLIC_DEPLOY_REF.trim()
+    : "";
+
 export function Footer() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-8%" });
@@ -46,6 +51,16 @@ export function Footer() {
               className="max-w-lg text-xs font-medium leading-relaxed text-zinc-800 dark:text-zinc-200"
             >
               {site.legalEntity.trim()}
+            </motion.p>
+          ) : null}
+
+          {deployRef ? (
+            <motion.p
+              variants={fadeUp}
+              className="text-[10px] font-medium tabular-nums tracking-wide text-zinc-500 dark:text-zinc-400"
+              translate="no"
+            >
+              Сборка: {deployRef}
             </motion.p>
           ) : null}
 
