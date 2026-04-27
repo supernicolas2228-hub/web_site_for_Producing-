@@ -87,11 +87,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-deploy-ref={deployRef || undefined}
       data-git-sha={gitSha || undefined}
     >
-      <head>
-        <link rel="preload" as="image" href="/images/boxer-photo.png" />
-        <link rel="preload" as="image" href="/images/kirill-hero-strategist.png" />
-        <link rel="preload" as="image" href="/images/hero-backdrop-castle.png" />
-      </head>
       <body
         translate="no"
         className="notranslate min-h-screen min-h-dvh font-body text-[15px] leading-[1.68] tracking-[-0.01em] antialiased [font-feature-settings:'kern'_1,'liga'_1] md:text-[16px] md:leading-[1.72]"
@@ -124,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             id="preloader-failsafe"
             strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
-              __html: `(function(){setTimeout(function(){try{document.documentElement.classList.remove('site-preloader-active');}catch(e){}},8500);})();`,
+              __html: `(function(){var ms=4500;setTimeout(function(){try{document.documentElement.classList.remove('site-preloader-active');var p=document.querySelector('[data-site-preloader="true"]');if(p){p.setAttribute('hidden','hidden');p.style.setProperty('display','none','important');p.style.setProperty('visibility','hidden','important');p.style.setProperty('pointer-events','none','important');p.style.setProperty('opacity','0','important');}}catch(e){}},ms);})();`,
             }}
           />
           {children}

@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { hero } from "@/config/content";
-import { isEmbeddedWebViewOrMessenger } from "@/lib/webview-env";
+import { shouldSkipHeavyPreloader } from "@/lib/preloader-skip";
 
 const SESSION_KEY = "ks_preloader_done_v8";
 
@@ -24,7 +24,8 @@ const FX_WORDS = [
   "УСПЕХ",
 ] as const;
 
-const MAX_MS = 5200;
+/** Жёсткий потолок: на медленном VPN / прокси GSAP не должен держать экран бесконечно. */
+const MAX_MS = 3200;
 
 /** Показать сцену снова: открой главную с `?replayLoader`. */
 function wantsReplayLoader(): boolean {
@@ -85,8 +86,8 @@ export function SitePreloader() {
   const displayName = hero.portraitAlt.trim() || "Кирилл Санчаев";
 
   useLayoutEffect(() => {
-    /* Telegram / Instagram / WebView: без прелоадера — сразу контент, иначе часто «пустой» экран. */
-    if (typeof window !== "undefined" && isEmbeddedWebViewOrMessenger()) {
+    /* Встроенный браузер / saveData / 2G / ?nofx=1 — без тяжёлого прелоадера. */
+    if (typeof window !== "undefined" && shouldSkipHeavyPreloader()) {
       setActive(false);
       return;
     }
