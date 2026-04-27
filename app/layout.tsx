@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { site } from "@/config/content";
 import { getMetadataBase } from "@/config/site";
+import { fontManrope, fontUnbounded } from "@/lib/fonts";
 import { themeInitInlineScript } from "@/lib/theme";
 
 export const metadata: Metadata = {
@@ -65,13 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="ru"
       translate="no"
       dir="ltr"
-      className="notranslate"
+      className={`notranslate ${fontManrope.variable} ${fontUnbounded.variable}`}
       suppressHydrationWarning
       data-deploy-ref={deployRef || undefined}
       data-git-sha={gitSha || undefined}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.bunny.net" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/images/boxer-photo.png" />
         <link rel="preload" as="image" href="/images/kirill-hero-strategist.png" />
         <link rel="preload" as="image" href="/images/hero-backdrop-castle.png" />

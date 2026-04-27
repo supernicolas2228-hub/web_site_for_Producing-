@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { STARTER_PACK_SUBMIT_URL } from "@/config/starter-pack";
+import { fetchWithTimeout } from "@/lib/fetch-robust";
 import { Button } from "@/components/ui/Button";
 import { track } from "@/lib/track";
 import { spring } from "@/lib/motion";
@@ -107,13 +108,20 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
 
     if (STARTER_PACK_SUBMIT_URL) {
       try {
-        await fetch(STARTER_PACK_SUBMIT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        await fetchWithTimeout(
+          STARTER_PACK_SUBMIT_URL,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            mode: "cors",
+            credentials: "omit",
+            cache: "no-store",
+          },
+          18_000,
+        );
       } catch {
-        /* остаёмся на локальном успехе */
+        /* остаёмся на локальном успехе: VPN/прокси/CORS/таймаут */
       }
     }
 

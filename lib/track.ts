@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "@/lib/fetch-robust";
+
 export type TrackPayload = {
   event: string;
   data?: Record<string, unknown>;
@@ -26,20 +28,27 @@ export function getTrafficSourcePayload(): Record<string, unknown> {
 }
 
 export async function track(event: string, data?: Record<string, unknown>): Promise<void> {
+  /* Статический Beget: без /api — не тратим запросы в пустоту (прокси, фильтры, LTE). */
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "1") {
     return;
   }
   try {
-    await fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event,
-        data: { ...getTrafficSourcePayload(), ...data },
-        timestamp: Date.now(),
-      }),
-    });
+    await fetchWithTimeout(
+      "/api/track",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event,
+          data: { ...getTrafficSourcePayload(), ...data },
+          timestamp: Date.now(),
+        }),
+        credentials: "same-origin",
+        cache: "no-store",
+      },
+      12_000,
+    );
   } catch {
-    /* non-blocking */
+    /* non-blocking: офлайн, прокси, таймаут — сайт работает дальше */
   }
 }
