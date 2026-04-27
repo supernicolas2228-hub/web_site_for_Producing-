@@ -53,11 +53,11 @@ function PlanCard({
   return (
     <motion.article
       variants={fadeUp}
-      whileHover={{ y: -8, scale: 1.01, transition: springHoverStrong }}
-      className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border p-6 shadow-plate ring-1 sm:min-h-[300px] sm:p-7 ${
+      whileHover={{ y: -10, scale: 1.015, transition: springHoverStrong }}
+      className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border p-6 shadow-plate ring-1 transition-shadow duration-300 sm:min-h-[300px] sm:p-7 ${
         popular
-          ? "border-emerald-600/55 ring-2 ring-emerald-500/35 dark:border-emerald-400/45 dark:ring-emerald-400/25"
-          : "border-stroke/18"
+          ? "border-emerald-600/60 ring-2 ring-emerald-500/40 hover:shadow-lift dark:border-emerald-400/50 dark:ring-emerald-400/30"
+          : "border-stroke/18 hover:border-emerald-800/30 hover:shadow-lift dark:hover:border-emerald-400/30"
       } ${t.cardBg} ${t.ring} dark:border-white/10`}
     >
       {popular ? (

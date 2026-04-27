@@ -32,8 +32,8 @@ export function Navbar() {
     "text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-900 transition hover:text-zinc-950 dark:text-zinc-100 dark:hover:text-white sm:text-xs";
 
   const barBg = scrolled
-    ? "border-b border-stroke/20 bg-[var(--nav-bg-scrolled)] shadow-[var(--nav-shadow)] backdrop-blur-2xl backdrop-saturate-150"
-    : "border-b border-transparent bg-[var(--nav-bg-top)] backdrop-blur-xl backdrop-saturate-150";
+    ? "border-b border-stroke/20 bg-[var(--nav-bg-scrolled)] shadow-[var(--nav-shadow)] backdrop-blur-[20px] backdrop-saturate-150 supports-[backdrop-filter]:bg-[var(--nav-bg-scrolled)]/90"
+    : "border-b border-transparent bg-[var(--nav-bg-top)]/85 backdrop-blur-[18px] backdrop-saturate-150 supports-[backdrop-filter]:bg-[var(--nav-bg-top)]/75";
 
   const hasProductLink = !isPlaceholderLink(links.product) && nav.productLabel.trim().length > 0;
 
@@ -138,7 +138,7 @@ export function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="border-t border-stroke/15 bg-[var(--nav-bg-scrolled)] shadow-lg backdrop-blur-xl lg:hidden"
+            className="border-t border-stroke/15 bg-gradient-to-b from-[var(--nav-bg-scrolled)]/95 to-zinc-950/12 shadow-[0_16px_40px_-20px_rgb(0_0_0/0.35)] backdrop-blur-2xl dark:from-zinc-950/88 dark:to-black/40 dark:shadow-[0_20px_50px_-18px_rgb(0_0_0/0.65)] lg:hidden"
           >
             <motion.div
               className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4"

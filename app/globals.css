@@ -1,4 +1,4 @@
-@import url("https://fonts.bunny.net/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap");
+@import url("https://fonts.bunny.net/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -101,6 +101,15 @@ html {
   /* iOS / WebView: не раздувать шрифт, из‑за чего ломается вёрстка во встроенных браузерах (в т.ч. Telegram). */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+/**
+ * Пока активен клиентский прелоадер, весь контент в #site-root скрыт, чтобы
+ * изображения Hero (GPU) не оказывались визуально «над» оверлеем.
+ */
+html.site-preloader-active #site-root {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /** Шапка: стабильный слой для position:fixed на мобильных (Safari / Chrome). */

@@ -9,15 +9,16 @@ import { TrackingProvider } from "@/components/TrackingProvider";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <StarterPackProvider>
-      <SitePreloader />
       <SiteBackdrop />
-      <div className="relative z-[1] notranslate" translate="no" lang="ru" dir="ltr">
+      <div className="relative z-[0] notranslate" translate="no" lang="ru" dir="ltr">
         <AnchorSmoothScroll />
         <TrackingProvider />
         <Navbar />
         <main className="relative overflow-x-clip">{children}</main>
         <Footer />
       </div>
+      {/* Порядок в разметке: прелоадер последним, плюс портал в body — иначе Hero-картинка визуально накрывает сцену */}
+      <SitePreloader />
     </StarterPackProvider>
   );
 }

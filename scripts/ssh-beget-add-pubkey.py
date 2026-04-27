@@ -26,9 +26,17 @@ def main() -> int:
     pub_path = (os.environ.get("BEGET_SSH_PUBKEY") or "").strip()
     if not pub_path:
         home = os.path.expanduser("~")
-        pub_path = os.path.join(
-            home, ".ssh", "id_ed25519_beget_supernh5.pub"
-        )
+        dot_ssh = os.path.join(home, ".ssh")
+        for name in ("id_ed25519_beget.pub", "id_ed25519_beget_supernh5.pub"):
+            p = os.path.join(dot_ssh, name)
+            if os.path.isfile(p):
+                pub_path = p
+                break
+        if not pub_path:
+            pub_path = os.path.join(dot_ssh, "id_ed25519_beget_supernh5.pub")
+    if not os.path.isfile(pub_path):
+        print(f"Pubkey not found: {pub_path}", file=sys.stderr)
+        return 1
     with open(pub_path, encoding="utf-8") as f:
         pub = f.read().strip()
     if not pub or " " not in pub:

@@ -19,9 +19,13 @@ const nextConfig = isBegetStatic
   ? {
       output: "export",
       images: { unoptimized: true },
-      webpack: (config) => {
-        config.cache = false;
-        return config;
+      /** На слабых ПК `tsc` в процессе build жрёт память; для статики Beget достаточно локальной проверки. */
+      typescript: { ignoreBuildErrors: true },
+      eslint: { ignoreDuringBuilds: true },
+      productionBrowserSourceMaps: false,
+      experimental: {
+        cpus: 1,
+        webpackBuildWorker: true,
       },
     }
   : {

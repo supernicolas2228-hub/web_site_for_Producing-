@@ -12,17 +12,16 @@ export const site = {
 } as const;
 
 export const hero = {
-  /** Фото в public/images */
-  portraitSrc: "/images/boxer-photo.jpg",
+  /** Первый экран + прелоадер: полный кадр (стратег/эксперт), не крупный план лица */
+  portraitSrc: "/images/kirill-hero-strategist.png",
+  /** Tailwind-классы для object-fit (см. Hero, SitePreloader) */
+  portraitCoverClass: "object-cover object-[center_48%_38%]",
   portraitAlt: "Кирилл Санчаев",
   /** Фон первого экрана — картинка в public/images. */
   backdropSrc: "/images/hero-backdrop-castle.png",
   kicker: "",
   marqueePhrases: [
-    "Стратегическая сессия — 0 ₽",
-    "Консультация",
-    "Личная работа",
-    "Система и доход",
+    "Стратегическая сессия — 0 ₽ · Консультация · Личная работа · Система и доход ·",
   ] as const,
   title: "Система, которая ведёт к доходу",
   subtitle:
@@ -34,6 +33,11 @@ export const hero = {
 } as const;
 
 export const about = {
+  /** Блок «Кто я»: отдельное фото — настроение, контекст */
+  portraitSrc: "/images/kirill-about-city.png",
+  /** Кадр: фигура слева, город справа; без странного смещения */
+  portraitCoverClass: "object-cover object-[22%_45%] sm:object-[18%_42%]",
+  portraitAlt: "Кирилл Санчаев",
   eyebrow: "",
   title: "Кто я такой и почему мне стоит верить?",
   subtitle: "Всем привет. Меня зовут Кирилл Санчаев, мне 15 лет.",

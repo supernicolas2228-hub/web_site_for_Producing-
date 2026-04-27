@@ -11,7 +11,7 @@ import { easeFloat, easePremium, fadeUp, spring, staggerSnappy } from "@/lib/mot
 import { track } from "@/lib/track";
 
 const titleCls =
-  "font-display text-[clamp(1.85rem,5.5vw,3.75rem)] font-bold leading-[1.04] tracking-[-0.03em] text-zinc-950 sm:leading-[1.02] dark:text-zinc-100";
+  "font-display text-[clamp(1.9rem,5.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-zinc-950 sm:leading-[1.01] dark:text-zinc-100";
 
 const subtitleCls =
   "mt-3 max-w-lg text-pretty text-[13px] font-medium leading-[1.65] text-zinc-900 sm:mt-4 sm:text-[14px] dark:text-zinc-100";
@@ -28,7 +28,7 @@ function HeroPortrait({
 }) {
   return (
     <motion.div
-      className="relative mx-auto w-full max-w-[22rem] overflow-hidden rounded-[1.75rem] border-2 border-emerald-600/45 bg-white/30 p-[3px] shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_48px_-12px_rgb(4_120_72/0.45)] backdrop-blur-md dark:border-emerald-400/40 dark:bg-white/[0.06] dark:shadow-[0_0_0_1px_rgb(255_255_255/0.06),0_16px_56px_-14px_rgb(52_211_153/0.35)] sm:max-w-[24rem] lg:mx-0 lg:max-w-none"
+      className="hero-portrait-wrap relative mx-auto w-full max-w-[26rem] overflow-hidden rounded-[1.75rem] border-2 border-emerald-500/55 bg-white/30 p-1.5 shadow-[0_0_0_1px_rgb(16_185_129/0.2),0_0_48px_-8px_rgb(4_120_72/0.4),0_20px_56px_-16px_rgb(4_120_72/0.5)] ring-1 ring-emerald-400/25 backdrop-blur-md dark:border-emerald-400/50 dark:bg-white/[0.06] dark:shadow-[0_0_0_1px_rgb(52_211_153/0.2),0_0_56px_-10px_rgb(52_211_153/0.28),0_20px_64px_-18px_rgb(0_0_0/0.55)] sm:max-w-[28rem] lg:mx-0 lg:max-w-none"
       animate={
         animateFloat && !reduceMotion
           ? { y: [0, -5, 0], rotate: [0, 0.35, 0, -0.3, 0] }
@@ -37,7 +37,7 @@ function HeroPortrait({
       transition={{ duration: 9, repeat: Infinity, ease: easeFloat }}
     >
       <motion.div
-        className="relative aspect-[3/4] w-full max-h-[min(72vh,560px)] overflow-hidden rounded-[1.45rem] border border-emerald-700/20 bg-transparent dark:border-emerald-400/25 sm:max-h-[min(76vh,580px)] lg:max-h-[min(82vh,640px)]"
+        className="relative aspect-[3/4] w-full max-h-[min(78vh,620px)] overflow-hidden rounded-[1.4rem] border border-emerald-600/30 bg-transparent dark:border-emerald-400/35 sm:max-h-[min(80vh,640px)] lg:max-h-[min(86vh,680px)]"
         animate={
           animateFloat && !reduceMotion
             ? {
@@ -55,7 +55,7 @@ function HeroPortrait({
           src={hero.portraitSrc}
           alt={hero.portraitAlt}
           fill
-          className="object-cover object-[center_22%]"
+          className={hero.portraitCoverClass}
           sizes="(max-width: 1024px) 90vw, 480px"
           priority
         />
@@ -82,7 +82,7 @@ export function Hero() {
   return (
     <section
       ref={ref}
-      className="relative z-10 overflow-hidden border-b border-stroke/15 pt-24 pb-12 dark:border-white/10 sm:pb-14 sm:pt-28 lg:pt-32 lg:pb-24"
+      className="relative z-0 overflow-hidden border-b border-stroke/15 pt-24 pb-12 dark:border-white/10 sm:pb-14 sm:pt-28 lg:pt-32 lg:pb-24"
     >
       <div
         className="pointer-events-none absolute inset-0 z-0 motion-reduce:animate-none opacity-[0.48]"
@@ -157,7 +157,7 @@ export function Hero() {
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               animate={heroClient ? { opacity: 1, scale: 1, y: 0 } : {}}
               transition={spring.portrait}
-              className="w-full max-w-[22rem] lg:max-w-none"
+              className="w-full max-w-[26rem] sm:max-w-[28rem] lg:max-w-none"
             >
               <HeroPortrait animateFloat={heroClient} reduceMotion={reduceMotion} />
             </motion.div>

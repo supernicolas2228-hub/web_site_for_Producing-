@@ -196,7 +196,7 @@ export function CasesReviews() {
                     return (
                     <motion.article
                       key={t.author}
-                      className="flex shrink-0 snap-start snap-always flex-col justify-between rounded-2xl border border-stroke/18 bg-white/50 p-6 shadow-plate backdrop-blur-sm transition-shadow duration-500 will-change-transform dark:border-white/10 dark:bg-white/[0.06] dark:hover:border-emerald-400/20 dark:hover:shadow-[0_12px_40px_-24px_rgb(0_0_0/0.75),0_0_0_1px_rgb(52_211_153/0.08)]"
+                      className="review-card group flex shrink-0 snap-start snap-always flex-col justify-between rounded-2xl border border-stroke/18 bg-white/50 p-6 shadow-plate backdrop-blur-sm transition-[transform,box-shadow,border-color] duration-500 will-change-transform dark:border-white/10 dark:bg-white/[0.06] dark:hover:border-emerald-400/28 dark:hover:shadow-[0_16px_48px_-22px_rgb(0_0_0/0.78),0_0_0_1px_rgb(52_211_153/0.12),0_0_28px_-8px_rgb(52_211_153/0.1)]"
                       style={{
                         width: itemWidth ? `${itemWidth}px` : "100%",
                         scrollSnapAlign: "start",
@@ -212,12 +212,14 @@ export function CasesReviews() {
                       }
                     >
                       <div>
-                        <p className="font-display text-sm font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                          {t.author}
-                        </p>
-                        <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                          Результат
-                        </p>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="font-display text-sm font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-200">
+                            {t.author}
+                          </p>
+                          <span className="rounded-full border border-emerald-700/20 bg-emerald-500/10 px-2 py-0.5 font-display text-[9px] font-bold uppercase tracking-wider text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200">
+                            Результат
+                          </span>
+                        </div>
                         <p className="mt-1 text-[13px] font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
                           {lead}
                         </p>
