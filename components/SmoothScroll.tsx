@@ -3,27 +3,15 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
+import { isEmbeddedWebViewOrMessenger } from "@/lib/webview-env";
 
 /**
  * Плавная прокрутка вверх/вниз. ResizeObserver вызывает lenis.resize() при смене высоты
  * (тайпрайтер, аккордеон, картинки) — иначе после скролла в конец инерция «отваливается».
- */
-/**
+ *
  * Встроенные браузеры (Telegram, Instagram, и т.д.) и Android System WebView: Lenis
- * дублирует/ломает нативный скролл, fixed-элементы и жесты — только нативный скролл.
- * UA у Telegram/мессенджеров и `; wv)` у встроенного Chrome WebView.
+ * дублирует/ломает нативный скролл — только нативный скролл.
  */
-function isEmbeddedWebViewOrMessenger(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  if (/Telegram|Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|Line\/|WhatsApp|Snapchat|Viber|WeChat/i.test(ua)) {
-    return true;
-  }
-  if (/; wv\)/.test(ua)) {
-    return true;
-  }
-  return false;
-}
 
 function shouldSkipLenis(): boolean {
   if (typeof window === "undefined") return true;

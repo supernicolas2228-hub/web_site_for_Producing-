@@ -7,6 +7,8 @@ import { getMetadataBase } from "@/config/site";
 import { fontManrope, fontUnbounded } from "@/lib/fonts";
 import { themeInitInlineScript } from "@/lib/theme";
 
+const canonicalSiteUrl = getMetadataBase().href.replace(/\/$/, "");
+
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: site.metaTitle,
@@ -23,6 +25,20 @@ export const metadata: Metadata = {
     description: site.metaDescription,
     locale: "ru_RU",
     type: "website",
+    url: canonicalSiteUrl,
+    images: [
+      {
+        url: "/images/kirill-hero-strategist.png",
+        width: 1200,
+        height: 630,
+        alt: site.metaTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.metaTitle,
+    description: site.metaDescription,
   },
   /**
    * Просьба к Chrome / Google не предлагать автоперевод (ломает кириллицу и даёт «арабские» подмены).
@@ -102,6 +118,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
               __html: `(function(){try{var d=document.documentElement;d.setAttribute('lang','ru');d.setAttribute('translate','no');d.setAttribute('dir','ltr');d.classList.add('notranslate');}catch(e){}})();`,
+            }}
+          />
+          <Script
+            id="preloader-failsafe"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `(function(){setTimeout(function(){try{document.documentElement.classList.remove('site-preloader-active');}catch(e){}},8500);})();`,
             }}
           />
           {children}

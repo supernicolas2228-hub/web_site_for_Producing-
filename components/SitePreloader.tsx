@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { hero } from "@/config/content";
+import { isEmbeddedWebViewOrMessenger } from "@/lib/webview-env";
 
 const SESSION_KEY = "ks_preloader_done_v8";
 
@@ -84,6 +85,11 @@ export function SitePreloader() {
   const displayName = hero.portraitAlt.trim() || "Кирилл Санчаев";
 
   useLayoutEffect(() => {
+    /* Telegram / Instagram / WebView: без прелоадера — сразу контент, иначе часто «пустой» экран. */
+    if (typeof window !== "undefined" && isEmbeddedWebViewOrMessenger()) {
+      setActive(false);
+      return;
+    }
     if (getSkipSession()) {
       setActive(false);
       return;
@@ -124,6 +130,7 @@ export function SitePreloader() {
 
     const run = () => {
       if (killedRef.current) return;
+      try {
       const root = rootRef.current;
       const box = boxRef.current;
       const nameEl = nameRef.current;
@@ -264,6 +271,9 @@ export function SitePreloader() {
           if (!killedRef.current) setActive(false);
         },
       });
+      } catch {
+        endAndHide();
+      }
     };
 
     whenDomReady(run);
