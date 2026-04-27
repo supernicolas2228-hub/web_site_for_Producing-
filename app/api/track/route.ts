@@ -34,7 +34,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 500 });
+  } catch (err) {
+    console.error("[api/track]", err);
+    // Не роняем клиент: трекинг не должен превращаться в «внутреннюю ошибку» в браузере.
+    return NextResponse.json({ ok: true, skipped: true }, { status: 200 });
   }
 }

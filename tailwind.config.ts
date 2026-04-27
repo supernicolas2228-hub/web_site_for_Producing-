@@ -2,6 +2,8 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: "class",
+  /** Chrome / Google Translate: класс блокирует автоперевод и подмену текста в меню */
+  safelist: ["notranslate"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -40,6 +42,7 @@ const config: Config = {
       animation: {
         marquee: "marquee 38s linear infinite",
         "marquee-slow": "marquee-slow 48s linear infinite",
+        "marquee-slow-reverse": "marquee-slow 56s linear infinite reverse",
         "placeholder-glow": "placeholder-glow 5.5s ease-in-out infinite",
         "placeholder-shine": "placeholder-shine 9s ease-in-out infinite",
         "typewriter-caret": "typewriter-caret 0.95s ease-in-out infinite",

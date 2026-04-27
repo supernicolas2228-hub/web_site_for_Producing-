@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { springHoverStrong } from "@/lib/motion";
 import type { ReactNode } from "react";
 
 export function Card({
@@ -24,7 +25,7 @@ export function Card({
             }
           : undefined
       }
-      transition={{ type: "spring", stiffness: 380, damping: 26 }}
+      transition={springHoverStrong}
       className={`ornate-frame relative overflow-hidden rounded-[1.5rem] border border-stroke/18 bg-white/55 p-6 shadow-plate backdrop-blur-xl dark:border-white/12 dark:bg-white/5 ${className}`}
     >
       <span

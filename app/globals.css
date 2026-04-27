@@ -1,6 +1,13 @@
+@import url("https://fonts.bunny.net/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
 
 :root,
 html.light {
@@ -10,7 +17,7 @@ html.light {
   --surface-muted-rgb: 216 232 222;
   --ink-rgb: 15 26 20;
   --stroke-rgb: 82 105 92;
-  --accent-rgb: 21 128 61;
+  --accent-rgb: 4 120 72;
   --hero-gradient:
     radial-gradient(ellipse 78% 56% at 12% 0%, rgb(21 128 61 / 0.16), transparent 55%),
     radial-gradient(ellipse 55% 42% at 88% 8%, rgb(15 80 45 / 0.12), transparent 58%);
@@ -51,7 +58,7 @@ html.dark {
   --surface-muted-rgb: 18 24 20;
   --ink-rgb: 230 238 233;
   --stroke-rgb: 95 115 102;
-  --accent-rgb: 52 211 153;
+  --accent-rgb: 45 212 160;
   --hero-gradient:
     radial-gradient(ellipse 72% 52% at 10% 6%, rgb(21 128 61 / 0.35), transparent 56%),
     radial-gradient(ellipse 58% 44% at 92% 12%, rgb(52 211 153 / 0.12), transparent 52%),
@@ -90,6 +97,37 @@ html.dark {
 html {
   scroll-behavior: auto;
   min-height: 100%;
+  min-height: 100dvh;
+  /* iOS / WebView: не раздувать шрифт, из‑за чего ломается вёрстка во встроенных браузерах (в т.ч. Telegram). */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/** Шапка: стабильный слой для position:fixed на мобильных (Safari / Chrome). */
+.site-header {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/**
+ * Лёгкое затемнение поверх фона (замок): основная читаемость — за счёт стеклянных панелей с контентом.
+ */
+.site-backdrop-scrim {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--page-rgb) / 0.34) 0%,
+    rgb(var(--page-rgb) / 0.42) 42%,
+    rgb(var(--page-rgb) / 0.38) 100%
+  );
+}
+
+html.dark .site-backdrop-scrim {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--page-rgb) / 0.48) 0%,
+    rgb(var(--page-rgb) / 0.56) 45%,
+    rgb(var(--page-rgb) / 0.52) 100%
+  );
 }
 
 html.light {
@@ -123,6 +161,12 @@ body::after {
 
 body::before {
   background: var(--body-gradient);
+  /* Сайт с глобальным фоном-иллюстрацией: базовый градиент body слабее, картинка читается. */
+  opacity: 0.28;
+}
+
+html.dark body::before {
+  opacity: 0.24;
 }
 
 body::after {
@@ -194,7 +238,57 @@ html.dark ::selection {
   }
 }
 
+@layer components {
+  /** Матовое стекло под текстовые блоки — фон-иллюстрация остаётся видимой между панелями. */
+  .glass-panel {
+    border-radius: 1.85rem;
+    border: 1px solid rgb(var(--stroke-rgb) / 0.22);
+    background: rgb(255 255 255 / 0.62);
+    box-shadow: var(--shadow-plate);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  html.dark .glass-panel {
+    border-color: rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.12);
+  }
+}
+
 @layer utilities {
+  .cta-glow {
+    box-shadow:
+      0 0 0 1px rgb(4 120 72 / 0.2),
+      0 12px 40px -14px rgb(4 120 72 / 0.45),
+      0 0 28px -8px rgb(52 211 153 / 0.25);
+  }
+  .cta-glow:hover {
+    box-shadow:
+      0 0 0 1px rgb(4 120 72 / 0.35),
+      0 16px 48px -12px rgb(4 120 72 / 0.5),
+      0 0 36px -6px rgb(52 211 153 / 0.4);
+  }
+  html.dark .cta-glow {
+    box-shadow:
+      0 0 0 1px rgb(52 211 153 / 0.15),
+      0 14px 44px -14px rgb(0 0 0 / 0.55),
+      0 0 32px -6px rgb(52 211 153 / 0.35);
+  }
+  html.dark .cta-glow:hover {
+    box-shadow:
+      0 0 0 1px rgb(52 211 153 / 0.28),
+      0 18px 50px -12px rgb(0 0 0 / 0.6),
+      0 0 40px -4px rgb(52 211 153 / 0.45);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-glow,
+    .cta-glow:hover,
+    html.dark .cta-glow,
+    html.dark .cta-glow:hover {
+      box-shadow: 0 10px 36px -14px rgb(4 120 72 / 0.35);
+    }
+  }
+
   .manuscript-surface {
     background:
       linear-gradient(180deg, rgb(var(--surface-rgb) / 0.82), rgb(var(--surface-rgb) / 0.68)),
@@ -219,4 +313,179 @@ html.dark ::selection {
     letter-spacing: 0.22em;
     text-transform: uppercase;
   }
+
+  /**
+   * Опциональное едва заметное свечение CTA (по умолчанию класс почти не используется).
+   */
+  .cta-attention {
+    animation: cta-attention-glow 5.5s ease-in-out infinite;
+  }
+
+  @keyframes cta-attention-glow {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 0 rgb(var(--accent-rgb) / 0)) brightness(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 8px rgb(var(--accent-rgb) / 0.18)) brightness(1.02);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-attention {
+      animation: none;
+    }
+  }
+
+  /** CTA «отзывы в Telegram»: мягкое свечение по контуру при наведении (тёмная тема остаётся читабельной). */
+  .reviews-telegram-cta {
+    position: relative;
+    isolation: isolate;
+  }
+  .reviews-telegram-cta::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    background: linear-gradient(
+      125deg,
+      rgb(16 185 129 / 0.2),
+      transparent 42%,
+      rgb(4 120 72 / 0.12)
+    );
+  }
+  html.dark .reviews-telegram-cta::before {
+    background: linear-gradient(
+      125deg,
+      rgb(52 211 153 / 0.28),
+      transparent 48%,
+      rgb(16 185 129 / 0.12)
+    );
+  }
+  .reviews-telegram-cta:hover::before,
+  .reviews-telegram-cta:focus-visible::before {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reviews-telegram-cta::before {
+      transition: none;
+    }
+  }
+
+  /**
+   * Слой прокрутки анкеты: скроллбар над затемнением (z-index) и контрастный, чтобы был виден на десктопе.
+   */
+  .starter-pack-scroll-layer {
+    scrollbar-gutter: stable;
+    scrollbar-width: auto;
+    scrollbar-color: rgb(4 120 72 / 0.95) rgb(255 255 255 / 0.55);
+  }
+
+  html.dark .starter-pack-scroll-layer {
+    scrollbar-color: rgb(52 211 153 / 0.95) rgb(15 23 18 / 0.75);
+  }
+
+  .starter-pack-scroll-layer::-webkit-scrollbar {
+    width: 14px;
+  }
+
+  .starter-pack-scroll-layer::-webkit-scrollbar-track {
+    margin-block: 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.5);
+  }
+
+  html.dark .starter-pack-scroll-layer::-webkit-scrollbar-track {
+    background: rgb(15 23 18 / 0.75);
+  }
+
+  .starter-pack-scroll-layer::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    border: 3px solid rgb(255 255 255 / 0.85);
+    background: linear-gradient(180deg, rgb(16 185 129), rgb(4 120 72));
+    box-shadow: 0 0 0 1px rgb(15 40 25 / 0.2);
+  }
+
+  html.dark .starter-pack-scroll-layer::-webkit-scrollbar-thumb {
+    border-color: rgb(15 23 18 / 0.95);
+    background: linear-gradient(180deg, rgb(110 231 183), rgb(5 150 105));
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+
+  /* Карусель отзывов: только горизонтальная прокрутка, тонкий скроллбар (как TrueWeb / my_web_site) */
+  .reviews-carousel-scroll {
+    overflow-y: hidden;
+    -ms-overflow-style: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(4 120 72 / 0.5) transparent;
+  }
+
+  html.dark .reviews-carousel-scroll {
+    scrollbar-color: rgb(52 211 153 / 0.45) transparent;
+  }
+
+  .reviews-carousel-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  .reviews-carousel-scroll::-webkit-scrollbar:vertical {
+    width: 0;
+  }
+
+  .reviews-carousel-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .reviews-carousel-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, rgb(4 120 72 / 0.65), rgb(16 185 129 / 0.65));
+    border-radius: 9999px;
+  }
+
+  html.dark .reviews-carousel-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, rgb(52 211 153 / 0.65), rgb(110 231 183 / 0.55));
+  }
+}
+
+/**
+ * Язык и автоперевод: фиксируем LTR и изолируем двунаправленный текст,
+ * чтобы Chrome/Google Translate не ломали порядок букв и не подмешивали посторонние глифы.
+ */
+.site-root {
+  unicode-bidi: isolate;
+  direction: ltr;
+  text-orientation: mixed;
+}
+
+/* Chrome после «перевода» иногда сдвигает вёрстку */
+html.translated-ltr body,
+html.translated-rtl body {
+  margin-top: 0 !important;
+  top: 0 !important;
+}
+
+/* Всплывающая подсказка виджета перевода перекрывает клики по кнопкам */
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/**
+ * Тёмная тема: выпадающий список <select> — читаемые пункты (Windows/Chrome часто дают
+ * светлый фон option при тёмном тексте до hover). См. анкету Starter Pack.
+ */
+html.dark select {
+  color-scheme: dark;
+}
+
+html.dark select option,
+html.dark select optgroup {
+  background-color: rgb(24 24 27);
+  color: rgb(244 244 245);
 }

@@ -1,0 +1,54 @@
+Сайт на VPS обновляется только после деплоя (архив + сборка на сервере + pm2).
+
+БЫСТРО С ПК (SSH-ключ уже есть, как у вас):
+  cd папка-проекта
+  npm run deploy:vps
+
+  В Cursor / VS Code: Ctrl+Shift+B или Terminal → Run Task → «VPS: выкладка сайта».
+
+  После коммита: сначала push в GitHub, потом выкладка одной командой:
+  npm run ship
+
+По умолчанию: каталог /var/www/business-card-site, процесс pm2 business-card-site.
+Переопределение: $env:DEPLOY_REMOTE_DIR, $env:DEPLOY_PM2_NAME, $env:DEPLOY_SSH_TARGET
+
+Логика на сервере: scripts/vps-remote-install.sh (распаковка, npm ci, build, pm2 restart или первый запуск). После сборки на сервере вызывается scripts/vps-ensure-public-ingress.sh: если UFW включён, открываются 22/80/443 с любого IP; предупреждение в лог, если в nginx везде `allow` по IP.
+
+---
+АВТОМАТИЧЕСКИ при push в GitHub (ветка main):
+  Файл: .github/workflows/deploy-vps.yml
+  В репозитории: Settings → Secrets → Actions, добавить:
+    VPS_SSH_PRIVATE_KEY  — приватный ключ (тот же, что для SSH, целиком)
+    VPS_HOST             — 138.124.90.218
+    VPS_USER             — root
+  После этого каждый git push origin main сам выкатывает сайт на сервер.
+
+Если путь или имя pm2 другие — правьте DEST и PM2_NAME в workflow и в vps-remote-install вызове.
+
+---
+nginx для IP :80 должен смотреть на порт 3000 (business-card-site). Конфиг sites-enabled/business-card-site.
+
+---
+Админка аналитики (как в репозитории web_site_for_Producing-):
+  URL:  http://138.124.90.218/admin  (или ваш домен + /admin)
+  Логин: пароль из ADMIN_PASSWORD в файле .env на сервере /var/www/business-card-site/.env
+  Если задать ADMIN_PASSWORD=1234 в том .env и перезапустить pm2 — вход по паролю 1234.
+  Локально: http://127.0.0.1:3030/admin (см. .env.example).
+
+---
+По http://138.124.90.218/ открывается FoxMind, а не сайт Кирилла:
+
+  Чаще всего: в /etc/nginx/sites-enabled/business-card-site (или аналог для этого IP)
+  в proxy_pass ошибочно указан порт 3002 (контейнер Fox), а PM2 business-card-site
+  слушает 127.0.0.1:3000. Проверка и исправление:
+
+  1) Убедиться, что Кирилл на 3000: curl -sI http://127.0.0.1:3000/
+  2) Открыть конфиг для server_name 138.124.90.218 и выставить:
+       proxy_pass http://127.0.0.1:3000;
+     Правильный пример: scripts/nginx-sites/business-card-site-by-ip.conf
+  3) sudo nginx -t && sudo systemctl reload nginx
+
+  FoxMind (3002) и business-card (3000) — разные порты; путать их нельзя.
+
+  Если «по IP» вообще не тот vhost: ls /etc/nginx/sites-enabled/, ищи default_server
+  и сравни с listen/server_name. Пример общего default на 3000: scripts/nginx-ip-default-business-card.conf

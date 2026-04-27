@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { easePremium } from "@/lib/motion";
 import { useState, type ReactNode } from "react";
 
 export type AccordionItemData = {
@@ -40,10 +41,10 @@ export function Accordion({ items }: { items: AccordionItemData[] }) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.36, ease: easePremium }}
                   className="border-t border-stroke/15 bg-white/65 backdrop-blur-md dark:border-white/10 dark:bg-white/5"
                 >
-                  <div className="px-4 py-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300 sm:px-6 sm:text-base">
+                  <div className="px-4 py-4 text-sm font-medium leading-relaxed text-zinc-900 dark:text-zinc-100 sm:px-6 sm:text-base">
                     {item.content}
                   </div>
                 </motion.div>

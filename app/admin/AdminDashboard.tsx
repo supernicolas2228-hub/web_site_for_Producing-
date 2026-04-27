@@ -78,7 +78,9 @@ export function AdminDashboard() {
           <h1 className="font-display text-4xl uppercase tracking-wide text-zinc-900 sm:text-5xl dark:text-white">
             Аналитика
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-white">{site.name} — дашборд</p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-white">
+            {(site.name.trim() || site.nameEn).trim() || "Сайт"} — дашборд
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <ThemeToggle />

@@ -35,20 +35,20 @@ export function PunchlineMarquee({ text, className = "" }: Props) {
 
   return (
     <div
-      className={`border-y border-accent/25 bg-gradient-to-r from-band/90 via-[#efe4cf] to-band/90 backdrop-blur-md dark:border-accent/35 dark:from-black/45 dark:via-[#1a201b] dark:to-black/45 ${className}`}
+      className={`border-y border-accent/25 bg-gradient-to-r from-white/40 via-white/28 to-white/40 backdrop-blur-lg dark:border-accent/35 dark:from-white/[0.07] dark:via-white/[0.05] dark:to-white/[0.07] ${className}`}
     >
       <p className="sr-only">{text}</p>
 
       <div className="motion-reduce:flex hidden flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-4 text-center">
-        <span className="font-display text-sm font-bold uppercase leading-snug tracking-wide text-zinc-800 dark:text-zinc-200">
+        <span className="font-display text-sm font-bold uppercase leading-snug tracking-wide text-zinc-950 dark:text-zinc-50">
           <EmojiTone className="mr-2 align-[-0.12em] text-lg">💡</EmojiTone>
           {first} {second}
         </span>
       </div>
 
       <div className="motion-reduce:hidden relative overflow-hidden py-4 sm:py-4">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-16 bg-gradient-to-r from-band to-transparent dark:from-page sm:w-24" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-16 bg-gradient-to-l from-band to-transparent dark:from-page sm:w-24" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-16 bg-gradient-to-r from-white/70 to-transparent dark:from-black/35 sm:w-24" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-16 bg-gradient-to-l from-white/70 to-transparent dark:from-black/35 sm:w-24" />
 
         <div className="flex w-max animate-marquee-slow motion-reduce:animate-none">
           {doubled.map((seg, i) => (
@@ -59,7 +59,7 @@ export function PunchlineMarquee({ text, className = "" }: Props) {
               <EmojiTone className="shrink-0 text-lg sm:text-xl" aria-hidden>
                 💡
               </EmojiTone>
-              <span className="font-display text-[11px] font-bold uppercase leading-tight tracking-[0.2em] text-zinc-800 sm:text-xs md:text-[13px] dark:text-zinc-200">
+              <span className="font-display text-[11px] font-bold uppercase leading-tight tracking-[0.2em] text-zinc-950 sm:text-xs md:text-[13px] dark:text-zinc-50">
                 {seg.node}
               </span>
               <span className="font-display text-accent/50 sm:text-sm" aria-hidden>

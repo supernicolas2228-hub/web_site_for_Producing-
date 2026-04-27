@@ -1,0 +1,27 @@
+# Beget (Apache). Файл копируется в out/ при static export.
+# Раньше редирект вёл на sanchaevkirill.ru — на *.beget.tech ломалось (чужой домен + 443 часто пуст).
+# — www.your.tld → тот же хост (если .beget.tech — по http, иначе https).
+# — HTTP→HTTPS на своём домене; на *.beget.tech не трогаем, пока в панели не выпустили SSL (иначе ERR_CONNECTION_REFUSED).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # www → apex, без смены на чужой домен
+  RewriteCond %{HTTP_HOST} ^www\.(.+\.beget\.tech)$ [NC]
+  RewriteRule ^ http://%1%{REQUEST_URI} [L,R=301,NE]
+
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301,NE]
+
+  # Только «свой» домен: принудить HTTPS. Для supernh5.beget.tech не делаем — 443 у техподдомена часто закрыт.
+  RewriteCond %{HTTP_HOST} !\.beget\.tech$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,NE]
+</IfModule>
+
+# Чтобы после деплоя браузер не показывал старый index.html из кэша
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>

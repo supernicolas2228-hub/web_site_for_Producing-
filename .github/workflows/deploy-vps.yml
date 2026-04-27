@@ -1,0 +1,63 @@
+# After you add GitHub secrets (see comments below), every push to main deploys to your VPS.
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create tarball
+        run: |
+          tar czf /tmp/site.tgz \
+            --exclude=node_modules \
+            --exclude=.next \
+            --exclude=.git \
+            --exclude=.env \
+            --exclude='*.db' \
+            -C "$GITHUB_WORKSPACE" .
+
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+
+      - name: Trust host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload archive and install script
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          scp /tmp/site.tgz "${VPS_USER}@${VPS_HOST}:~/sell-is-life-deploy.tgz"
+          scp "$GITHUB_WORKSPACE/scripts/vps-remote-install.sh" "${VPS_USER}@${VPS_HOST}:/tmp/vps-remote-install.sh"
+          scp "$GITHUB_WORKSPACE/scripts/vps-ensure-public-ingress.sh" "${VPS_USER}@${VPS_HOST}:/tmp/vps-ensure-public-ingress.sh"
+
+      - name: Extract, build, pm2
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          ssh "${VPS_USER}@${VPS_HOST}" \
+            "chmod +x /tmp/vps-remote-install.sh /tmp/vps-ensure-public-ingress.sh && \
+             export DEST='/var/www/business-card-site' PM2_NAME='business-card-site' ARCHIVE=\$HOME/sell-is-life-deploy.tgz PORT=3000 && \
+             bash /tmp/vps-remote-install.sh && \
+             rm -f /tmp/vps-remote-install.sh"
+
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   VPS_SSH_PRIVATE_KEY  — full private key (-----BEGIN ... OPENSSH PRIVATE KEY-----)
+#   VPS_HOST             — e.g. 138.124.90.218
+#   VPS_USER             — e.g. root
+# If your app path or PM2 name differ, edit DEST / PM2_NAME in the ssh step above.

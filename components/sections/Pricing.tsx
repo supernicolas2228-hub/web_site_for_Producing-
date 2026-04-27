@@ -1,16 +1,84 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { pricing } from "@/config/content";
 import { links, isPlaceholderLink } from "@/config/links";
 import { useStarterPack } from "@/components/starter-pack/StarterPackProvider";
-import { Card } from "@/components/ui/Card";
 import { AnchorButton, Button } from "@/components/ui/Button";
-import { TypewriterText } from "@/components/TypewriterText";
-import { fadeUp, staggerContainer } from "@/lib/motion";
+import { SectionHeading } from "@/components/SectionHeading";
+import {
+  fadeUp,
+  growFromLeft,
+  growFromRight,
+  sectionEnter,
+  spring,
+  springHoverStrong,
+  staggerContainer,
+} from "@/lib/motion";
 import { chainOnClick, outboundAnchorProps } from "@/lib/outbound-link";
 import { track } from "@/lib/track";
+
+const TONES = [
+  {
+    corner: "from-emerald-500/30 via-emerald-400/10 to-transparent dark:from-emerald-400/22",
+    badge: "bg-emerald-800 text-white shadow-md shadow-emerald-900/25 dark:bg-emerald-600",
+    ring: "ring-emerald-700/15 dark:ring-emerald-400/20",
+    cardBg: "bg-white/48 backdrop-blur-xl dark:bg-white/[0.09]",
+  },
+  {
+    corner: "from-teal-500/28 via-cyan-500/8 to-transparent dark:from-teal-400/20",
+    badge: "bg-teal-800 text-white shadow-md shadow-teal-900/20 dark:bg-teal-600",
+    ring: "ring-teal-700/15 dark:ring-teal-400/18",
+    cardBg: "bg-white/44 backdrop-blur-xl dark:bg-white/[0.085]",
+  },
+  {
+    corner: "from-green-500/26 via-lime-500/8 to-transparent dark:from-green-400/18",
+    badge: "bg-green-800 text-white shadow-md shadow-green-900/22 dark:bg-green-600",
+    ring: "ring-green-700/14 dark:ring-green-400/18",
+    cardBg: "bg-white/46 backdrop-blur-xl dark:bg-white/[0.09]",
+  },
+] as const;
+
+function PlanCard({
+  tone,
+  popular,
+  children,
+}: {
+  tone: 0 | 1 | 2;
+  popular?: boolean;
+  children: ReactNode;
+}) {
+  const t = TONES[tone];
+  return (
+    <motion.article
+      variants={fadeUp}
+      whileHover={{ y: -8, scale: 1.01, transition: springHoverStrong }}
+      className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border p-6 shadow-plate ring-1 sm:min-h-[300px] sm:p-7 ${
+        popular
+          ? "border-emerald-600/55 ring-2 ring-emerald-500/35 dark:border-emerald-400/45 dark:ring-emerald-400/25"
+          : "border-stroke/18"
+      } ${t.cardBg} ${t.ring} dark:border-white/10`}
+    >
+      {popular ? (
+        <div className="absolute right-3 top-3 z-10">
+          <span className="inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-[0.2em] text-white shadow-md dark:from-emerald-500 dark:to-emerald-400">
+            Популярно
+          </span>
+        </div>
+      ) : null}
+      <div
+        className={`pointer-events-none absolute -left-10 -top-10 h-36 w-36 rounded-full bg-gradient-to-br opacity-80 blur-3xl transition-opacity duration-500 group-hover:opacity-100 ${t.corner}`}
+        aria-hidden
+      />
+      <div
+        className={`pointer-events-none absolute -bottom-12 -right-8 h-28 w-28 rounded-full bg-gradient-to-tl opacity-50 blur-2xl ${t.corner}`}
+        aria-hidden
+      />
+      <div className="relative flex flex-1 flex-col">{children}</div>
+    </motion.article>
+  );
+}
 
 export function Pricing() {
   const ref = useRef(null);
@@ -22,148 +90,160 @@ export function Pricing() {
   const payLinkReady = !isPlaceholderLink(joinHref);
 
   return (
-    <section
+    <motion.section
       id="pricing"
       ref={ref}
-      className="scroll-mt-24 border-b border-stroke/15 bg-band/34 py-16 backdrop-blur-xl dark:border-white/10 dark:bg-band/24 sm:py-20 lg:py-28"
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={sectionEnter}
+      className="relative isolate scroll-mt-24 overflow-hidden border-b border-stroke/15 py-14 sm:py-16 lg:py-20 dark:border-white/10"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="font-display text-[11px] uppercase tracking-[0.28em] text-accent">Контакт и запись</p>
-        <TypewriterText
-          as="h2"
-          text={pricing.title}
-          className="mt-3 font-display text-[clamp(1.9rem,4vw,3.7rem)] uppercase leading-[1.02] tracking-tight text-zinc-900 dark:text-zinc-100"
-          start={inView}
-          speedMs={10}
-          onComplete={() => setHeadDone(true)}
-        />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="glass-panel mx-auto flex max-w-4xl flex-col items-center px-6 py-8 text-center sm:px-10 sm:py-10">
+          {pricing.eyebrow.trim() ? (
+            <p className="mb-3 font-display text-[11px] font-bold uppercase tracking-[0.28em] text-accent sm:text-xs">
+              {pricing.eyebrow}
+            </p>
+          ) : null}
+          <div className="flex w-full max-w-2xl items-center gap-4">
+            <motion.span
+              className="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-600/55 to-emerald-700/90 dark:via-emerald-400/45"
+              style={{ transformOrigin: "0% 50%" }}
+              variants={growFromLeft}
+              initial="hidden"
+              animate={inView ? "show" : "hidden"}
+            />
+            <motion.p
+              className="shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.42em] text-emerald-800 dark:text-emerald-300"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={spring.sectionPunch}
+            >
+              {pricing.ribbonLabel}
+            </motion.p>
+            <motion.span
+              className="h-px flex-1 bg-gradient-to-l from-transparent via-emerald-600/55 to-emerald-700/90 dark:via-emerald-400/45"
+              style={{ transformOrigin: "100% 50%" }}
+              variants={growFromRight}
+              initial="hidden"
+              animate={inView ? "show" : "hidden"}
+            />
+          </div>
+
+          <SectionHeading
+            inView={inView}
+            className="mt-5 max-w-4xl font-display text-[clamp(1.65rem,4vw,3rem)] uppercase leading-[1.06] tracking-tight text-zinc-900 dark:text-zinc-100"
+            onAnimationComplete={() => setHeadDone(true)}
+          >
+            {pricing.title}
+          </SectionHeading>
+
+          {pricing.intro.trim() ? (
+            <motion.p
+              className="mt-4 max-w-2xl text-base font-semibold leading-relaxed text-emerald-950 dark:text-emerald-50"
+              initial={{ opacity: 0, y: 8 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.06, ...sectionEnter }}
+            >
+              {pricing.intro}
+            </motion.p>
+          ) : null}
+
+          {pricing.contactRibbon.trim() ? (
+            <motion.div
+              className="mt-8 w-full max-w-xl rounded-2xl border border-emerald-800/15 bg-gradient-to-br from-emerald-50/95 via-white/90 to-teal-50/80 px-5 py-4 text-center shadow-plate dark:border-emerald-400/20 dark:from-emerald-950/45 dark:via-[rgb(var(--surface-rgb)/0.9)] dark:to-zinc-950/85"
+              initial={{ opacity: 0, y: 12 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ ...spring.sectionMicro, delay: 0.12 }}
+            >
+              <p className="font-display text-[11px] font-bold uppercase tracking-[0.32em] text-emerald-900 dark:text-emerald-200">
+                {pricing.contactRibbon}
+              </p>
+              {pricing.contactHint.trim() ? (
+                <p className="mt-2 text-[13px] font-semibold leading-relaxed text-emerald-950 dark:text-emerald-50">
+                  {pricing.contactHint}
+                </p>
+              ) : null}
+            </motion.div>
+          ) : null}
+
+          <motion.p
+            className="mt-6 max-w-2xl text-sm font-medium leading-relaxed text-zinc-900 sm:text-base dark:text-zinc-100"
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ ...spring.sectionMicro, delay: 0.2 }}
+          >
+            {pricing.lead}
+          </motion.p>
+        </div>
 
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={inView && headDone ? "show" : "hidden"}
+          className="relative mt-10 grid gap-8 md:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-6"
         >
-          <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-8">
-            {pricing.plans.map((plan) => {
-              const featured = plan.featured;
-              return (
-                <motion.div
-                  key={plan.id}
-                  variants={fadeUp}
-                  className={featured ? "lg:-mt-2 lg:mb-2" : ""}
-                >
-                  <Card
-                    hover
-                    className={`relative flex h-full flex-col ${
-                      featured
-                        ? "overflow-visible border-2 border-accent !bg-slate-200/95 pt-10 shadow-lift ring-2 ring-accent/25 backdrop-blur-xl dark:!border-accent/55 dark:!bg-[#1a2330] dark:!shadow-plate dark:ring-accent/26 lg:scale-[1.03]"
-                        : ""
-                    }`}
+          {pricing.plans.map((plan, i) => {
+            const tone = i as 0 | 1 | 2;
+            const t = TONES[tone];
+            return (
+              <PlanCard key={plan.id} tone={tone} popular={plan.id === "consult"}>
+                <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+                  <span
+                    className={`inline-flex items-center rounded-full px-3 py-1.5 font-display text-[9px] font-bold uppercase tracking-[0.22em] ${t.badge}`}
                   >
-                    {featured && (
-                      <>
-                        <motion.span
-                          className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
-                          animate={{ opacity: [0.35, 1, 0.35], scaleX: [0.9, 1, 0.9] }}
-                          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-                          aria-hidden
-                        />
-                        <motion.span
-                          className="pointer-events-none absolute inset-y-10 right-6 w-20 rounded-full bg-[radial-gradient(circle,rgb(var(--accent-rgb)/0.16),transparent_70%)] blur-2xl"
-                          animate={{ opacity: [0.2, 0.42, 0.2], scale: [0.92, 1.06, 0.92] }}
-                          transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-                          aria-hidden
-                        />
-                      </>
+                    {plan.lane}
+                  </span>
+                </div>
+                <h3 className="mt-4 font-display text-lg uppercase leading-snug tracking-tight text-zinc-900 sm:text-xl dark:text-zinc-100">
+                  {plan.period}
+                </h3>
+                <p className="mt-4 font-display text-[clamp(1.85rem,4.2vw,2.35rem)] font-bold tabular-nums leading-none tracking-[-0.04em] text-emerald-900 antialiased dark:text-emerald-300">
+                  {plan.price}
+                </p>
+                <p className="mt-4 flex-1 text-sm font-medium leading-relaxed text-zinc-900 sm:text-[15px] dark:text-zinc-100">
+                  {plan.description}
+                </p>
+                {payLinkReady ? (
+                  <AnchorButton
+                    {...joinCta}
+                    variant="primary"
+                    attention
+                    className="mt-8 w-full !justify-center"
+                    onClick={chainOnClick(joinCta.onClick, () =>
+                      void track("click_pricing", { plan: plan.id, period: plan.period })
                     )}
-                    {featured && (
-                      <span className="absolute right-4 top-4 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md shadow-accent/40">
-                        Рекомендуем
-                      </span>
-                    )}
-                    <p className="font-display text-xl uppercase tracking-[0.08em] text-zinc-900 dark:text-zinc-100">
-                      {plan.period}
-                    </p>
-                    <p className="mt-4 font-body text-[1.45rem] font-medium tabular-nums tracking-[-0.03em] text-zinc-700 antialiased dark:text-zinc-200 sm:text-[1.625rem]">
-                      {plan.price}
-                    </p>
-                    <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-                      {plan.description}
-                    </p>
-                    {payLinkReady ? (
-                      <AnchorButton
-                        {...joinCta}
-                        variant={featured ? "primary" : "secondary"}
-                        className="mt-6 w-full !justify-center"
-                        onClick={chainOnClick(joinCta.onClick, () =>
-                          void track("click_pricing", { plan: plan.id, period: plan.period })
-                        )}
-                      >
-                        Выбрать
-                      </AnchorButton>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant={featured ? "primary" : "secondary"}
-                        className="mt-6 w-full !justify-center"
-                        onClick={() => {
-                          void track("click_pricing", { plan: plan.id, period: plan.period, via: "starter_pack" });
-                          starterPack.open(`pricing_plan_${plan.id}`);
-                        }}
-                      >
-                        Записаться
-                      </Button>
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <motion.div
-            variants={fadeUp}
-            className="ornate-frame mt-16 rounded-[2rem] border border-stroke/20 bg-white/55 p-6 shadow-plate backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:p-10"
-          >
-            <div className="max-w-3xl space-y-3 text-base leading-relaxed text-zinc-700 sm:text-lg dark:text-zinc-300">
-              {pricing.finalLines.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {payLinkReady ? (
-                <AnchorButton
-                  {...joinCta}
-                  onClick={chainOnClick(joinCta.onClick, () =>
-                    void track("click_pricing", { plan: "final_cta", label: "join" })
-                  )}
-                >
-                  {pricing.ctaPaid}
-                </AnchorButton>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={() => {
-                    void track("click_pricing", { plan: "final_cta", label: "starter_pack" });
-                    starterPack.open("pricing_final_paid");
-                  }}
-                >
-                  {pricing.ctaPaid}
-                </Button>
-              )}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  void track("click_starter_pack", { from: "pricing_final" });
-                  starterPack.open("pricing_final");
-                }}
-              >
-                {pricing.ctaStarter}
-              </Button>
-            </div>
-          </motion.div>
+                  >
+                    {plan.cta}
+                  </AnchorButton>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="primary"
+                    attention
+                    className="mt-8 w-full !justify-center"
+                    onClick={() => {
+                      void track("click_pricing", { plan: plan.id, period: plan.period, via: "starter_pack" });
+                      starterPack.open(`pricing_plan_${plan.id}`);
+                    }}
+                  >
+                    {plan.cta}
+                  </Button>
+                )}
+              </PlanCard>
+            );
+          })}
         </motion.div>
+
+        <motion.p
+          variants={fadeUp}
+          initial="hidden"
+          animate={inView && headDone ? "show" : "hidden"}
+          className="glass-panel mx-auto mt-10 max-w-lg px-5 py-4 text-center text-xs font-medium leading-relaxed text-zinc-900 dark:text-zinc-100"
+        >
+          {pricing.footerNote}
+        </motion.p>
       </div>
-    </section>
+    </motion.section>
   );
 }

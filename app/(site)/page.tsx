@@ -1,8 +1,10 @@
 import { About } from "@/components/sections/About";
+import { CasesReviews } from "@/components/sections/CasesReviews";
+import { FAQSection } from "@/components/sections/FAQSection";
 import { ForWho } from "@/components/sections/ForWho";
 import { Hero } from "@/components/sections/Hero";
 import { Pricing } from "@/components/sections/Pricing";
-import { TwoPaths } from "@/components/sections/TwoPaths";
+import { WhatIGive } from "@/components/sections/WhatIGive";
 
 export default function HomePage() {
   return (
@@ -10,8 +12,10 @@ export default function HomePage() {
       <Hero />
       <About />
       <ForWho />
-      <TwoPaths />
+      <WhatIGive />
+      <CasesReviews />
       <Pricing />
+      <FAQSection />
     </>
   );
 }

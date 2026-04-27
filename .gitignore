@@ -44,4 +44,5 @@ next-env.d.ts
 
 # build artifacts / local bundles (not portfolio source)
 /release/
+beget-upload*.zip
 *.tsbuildinfo

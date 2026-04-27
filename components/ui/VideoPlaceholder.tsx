@@ -120,7 +120,7 @@ export function VideoPlaceholder({
             {headline}
           </span>
         </h3>
-        <p className="font-body mt-4 max-w-md text-[13px] leading-[1.7] tracking-[-0.015em] text-zinc-600 antialiased sm:text-[15px] dark:text-zinc-300">
+        <p className="font-body mt-4 max-w-md text-[13px] font-medium leading-[1.7] tracking-[-0.015em] text-zinc-900 antialiased sm:text-[15px] dark:text-zinc-100">
           {description}
         </p>
       </div>

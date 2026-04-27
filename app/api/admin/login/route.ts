@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { adminSessionCookieSecure } from "@/lib/admin-cookie-secure";
 import { ADMIN_COOKIE, makeAdminSessionToken } from "@/lib/admin-session";
+import { getAdminPassword } from "@/lib/admin-password";
 
 export async function POST(req: Request) {
   try {
     const { password: raw } = (await req.json()) as { password?: string };
     const password = typeof raw === "string" ? raw.trim() : "";
-    const expected = process.env.ADMIN_PASSWORD?.trim();
+    const expected = getAdminPassword();
     if (!expected || password !== expected) {
       return NextResponse.json({ ok: false, error: "Неверный пароль" }, { status: 401 });
     }

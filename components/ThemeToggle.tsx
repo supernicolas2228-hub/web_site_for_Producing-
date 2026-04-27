@@ -1,11 +1,14 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { applyThemeClass, setStoredTheme, type Theme } from "@/lib/theme";
+import { spring } from "@/lib/motion";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [ready, setReady] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
@@ -23,12 +26,15 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   const label = theme === "dark" ? "Включить светлую тему" : "Включить тёмную тему";
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={toggle}
       aria-label={label}
       title={label}
       disabled={!ready}
+      whileHover={reduceMotion ? {} : { scale: 1.06 }}
+      whileTap={reduceMotion ? {} : { scale: 0.9, rotate: -10 }}
+      transition={spring.toggle}
       className={[
         "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition",
         "border border-stroke/20 bg-white/55 text-zinc-900 shadow-plate backdrop-blur-xl hover:border-accent/55 hover:text-accent dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-accent/45 dark:hover:text-sky-200",
@@ -37,7 +43,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       ].join(" ")}
     >
       {theme === "dark" ? <IconSun /> : <IconMoon />}
-    </button>
+    </motion.button>
   );
 }
 

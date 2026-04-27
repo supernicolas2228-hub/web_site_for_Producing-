@@ -1,18 +1,20 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { nav, site } from "@/config/content";
-import { BrandMark } from "@/components/BrandMark";
+import { links, isPlaceholderLink } from "@/config/links";
 import { Button } from "@/components/ui/Button";
 import { useStarterPack } from "@/components/starter-pack/StarterPackProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { track } from "@/lib/track";
+import { fadeUp, spring, staggerSnappy } from "@/lib/motion";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const reduceMotion = useReducedMotion();
   const starterPack = useStarterPack();
 
   useEffect(() => {
@@ -22,41 +24,84 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const linkClass =
-    "text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-700 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-zinc-100 sm:text-xs";
+    "text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-900 transition hover:text-zinc-950 dark:text-zinc-100 dark:hover:text-white sm:text-xs";
 
   const barBg = scrolled
-    ? "border-b border-stroke/20 bg-[var(--nav-bg-scrolled)] shadow-[var(--nav-shadow)] backdrop-blur-xl"
-    : "border-b border-transparent bg-[var(--nav-bg-top)] backdrop-blur-md";
+    ? "border-b border-stroke/20 bg-[var(--nav-bg-scrolled)] shadow-[var(--nav-shadow)] backdrop-blur-2xl backdrop-saturate-150"
+    : "border-b border-transparent bg-[var(--nav-bg-top)] backdrop-blur-xl backdrop-saturate-150";
+
+  const hasProductLink = !isPlaceholderLink(links.product) && nav.productLabel.trim().length > 0;
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-colors ${barBg}`}>
+    <>
+      {open ? (
+        <div
+          role="presentation"
+          className="fixed inset-0 z-[90] min-h-dvh w-full cursor-default bg-zinc-950/60 backdrop-blur-sm transition-opacity duration-200 lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
+    <header
+      className={`site-header notranslate fixed inset-x-0 top-0 z-[100] w-full max-w-none transition-colors ${barBg}`}
+      style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+    >
       {site.topRibbon.trim() ? (
-        <p className="border-b border-stroke/10 bg-band/45 px-4 py-2 text-center text-[10px] font-medium leading-snug tracking-[0.06em] text-zinc-600 dark:border-white/8 dark:bg-black/22 dark:text-zinc-400 sm:text-[11px] sm:tracking-[0.08em]">
+        <p className="border-b border-stroke/10 bg-band/45 px-4 py-2 text-center text-[10px] font-semibold leading-snug tracking-[0.06em] text-zinc-900 dark:border-white/8 dark:bg-black/22 dark:text-zinc-100 sm:text-[11px] sm:tracking-[0.08em]">
           {site.topRibbon}
         </p>
       ) : null}
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-3"
+      <motion.div
+        className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8"
+        initial={reduceMotion ? false : { opacity: 0, y: -14 }}
+        animate={mounted ? { opacity: 1, y: 0 } : {}}
+        transition={spring.nav}
+      >
+        <motion.nav
+          className="hidden min-w-0 flex-1 justify-center gap-6 lg:flex xl:gap-8"
+          variants={staggerSnappy}
+          initial="hidden"
+          animate={mounted ? "show" : "hidden"}
         >
-          <BrandMark size="sm" animated={false} />
-          <span className="font-display text-xl uppercase tracking-[0.24em] text-zinc-900 dark:text-zinc-100 sm:text-2xl">
-            {site.name}
-          </span>
-        </Link>
-
-        <nav className="hidden flex-1 justify-center gap-6 lg:flex xl:gap-8">
           {nav.anchors.map((a) => (
-            <a key={a.href} href={a.href} className={linkClass}>
+            <motion.a
+              key={a.href}
+              href={a.href}
+              className={linkClass}
+              variants={fadeUp}
+              whileHover={reduceMotion ? {} : { y: -2 }}
+              whileTap={reduceMotion ? {} : { scale: 0.97 }}
+            >
               {a.label}
-            </a>
+            </motion.a>
           ))}
-        </nav>
+        </motion.nav>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <motion.div
+          className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3"
+          initial={reduceMotion ? false : { opacity: 0, x: 12 }}
+          animate={mounted ? { opacity: 1, x: 0 } : {}}
+          transition={spring.navDrawer}
+        >
           <ThemeToggle />
+          {hasProductLink ? (
+            <motion.a
+              href={links.product}
+              target="_blank"
+              rel="noreferrer"
+              className={`${linkClass} hidden lg:inline-flex`}
+              initial={reduceMotion ? false : { opacity: 0, x: 6 }}
+              animate={mounted ? { opacity: 1, x: 0 } : {}}
+              transition={spring.navDrawer}
+              onClick={() => void track("click_product", { from: "navbar_product" })}
+            >
+              {nav.productLabel}
+            </motion.a>
+          ) : null}
           <div className="hidden lg:block">
             <Button
               type="button"
@@ -84,8 +129,8 @@ export function Navbar() {
               )}
             </svg>
           </button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <AnimatePresence>
         {open && (
@@ -95,17 +140,39 @@ export function Navbar() {
             exit={{ height: 0, opacity: 0 }}
             className="border-t border-stroke/15 bg-[var(--nav-bg-scrolled)] shadow-lg backdrop-blur-xl lg:hidden"
           >
-            <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
+            <motion.div
+              className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4"
+              variants={staggerSnappy}
+              initial="hidden"
+              animate="show"
+            >
               {nav.anchors.map((a) => (
-                <a
+                <motion.a
                   key={a.href}
                   href={a.href}
-                  className="min-h-[48px] rounded-2xl px-3 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-700 transition hover:bg-accent/10 dark:text-zinc-300 dark:hover:bg-white/5"
+                  variants={fadeUp}
+                  className="min-h-[48px] rounded-2xl px-3 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-900 transition hover:bg-accent/10 dark:text-zinc-100 dark:hover:bg-white/5"
                   onClick={() => setOpen(false)}
                 >
                   {a.label}
-                </a>
+                </motion.a>
               ))}
+              {hasProductLink ? (
+                <motion.a
+                  href={links.product}
+                  target="_blank"
+                  rel="noreferrer"
+                  variants={fadeUp}
+                  className="min-h-[48px] rounded-2xl px-3 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-900 transition hover:bg-accent/10 dark:text-zinc-100 dark:hover:bg-white/5"
+                  onClick={() => {
+                    setOpen(false);
+                    void track("click_product", { from: "navbar_product_mobile" });
+                  }}
+                >
+                  {nav.productLabel}
+                </motion.a>
+              ) : null}
+              <motion.div variants={fadeUp}>
               <Button
                 type="button"
                 className="mt-2 w-full !justify-center"
@@ -117,10 +184,12 @@ export function Navbar() {
               >
                 {nav.cta}
               </Button>
-            </div>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+    </>
   );
 }
