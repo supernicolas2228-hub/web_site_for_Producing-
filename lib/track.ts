@@ -26,6 +26,9 @@ export function getTrafficSourcePayload(): Record<string, unknown> {
 }
 
 export async function track(event: string, data?: Record<string, unknown>): Promise<void> {
+  if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "1") {
+    return;
+  }
   try {
     await fetch("/api/track", {
       method: "POST",

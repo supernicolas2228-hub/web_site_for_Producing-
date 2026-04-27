@@ -62,6 +62,10 @@ if (rmQuiet(nextDir)) {
 }
 
 process.env.BEGET_STATIC = "1";
+/* В клиентском бундле: не дергать /api/track (на Beget API нет). */
+if (process.env.NEXT_PUBLIC_STATIC_EXPORT == null || process.env.NEXT_PUBLIC_STATIC_EXPORT === "") {
+  process.env.NEXT_PUBLIC_STATIC_EXPORT = "1";
+}
 if (!process.env.NEXT_PUBLIC_SITE_URL) {
   process.env.NEXT_PUBLIC_SITE_URL = "https://sanchaevkirill.ru";
 }

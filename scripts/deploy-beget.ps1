@@ -12,7 +12,7 @@ function Load-DotEnvBeget {
   Get-Content $p -Encoding UTF8 | ForEach-Object {
     $line = $_.Trim()
     if ($line -match '^\s*#' -or $line -eq "") { return }
-    if ($line -match '^(BEGET_SSH|BEGET_SSH_USER|BEGET_SSH_HOST|NEXT_PUBLIC_DEPLOY_REF|NEXT_PUBLIC_SITE_URL)=(.*)$') {
+    if ($line -match '^(BEGET_SSH|BEGET_SSH_USER|BEGET_SSH_HOST|BEGET_UNPACK_PATHS|NEXT_PUBLIC_DEPLOY_REF|NEXT_PUBLIC_SITE_URL)=(.*)$') {
       $k = $Matches[1]
       $v = $Matches[2].Trim()
       if (($v.StartsWith('"') -and $v.EndsWith('"')) -or ($v.StartsWith("'") -and $v.EndsWith("'"))) {
@@ -80,8 +80,16 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
-# Как в .github/workflows/deploy-beget.yml
-$remoteCmd = 'for d in "$HOME/supernh5.beget.tech/public_html" "$HOME/sanchaevkirill.ru/public_html"; do mkdir -p "$d" && rm -rf "$d"/* && tar -xzf "$HOME/beget-out.tar.gz" -C "$d" && echo "unpacked: $d"; done; rm -f "$HOME/beget-out.tar.gz"'
+# Папки public_html: по умолчанию — техдомен + .ru. В .env: BEGET_UNPACK_PATHS=...|... (как $HOME/домен/public_html, разделитель |).
+$unpackPaths = [Environment]::GetEnvironmentVariable("BEGET_UNPACK_PATHS", "Process")
+if ($unpackPaths) {
+  $parts = $unpackPaths -split '\|' | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
+  $quoted = ($parts | ForEach-Object { "`"$_`"" }) -join " "
+} else {
+  $quoted = '"$HOME/supernh5.beget.tech/public_html" "$HOME/sanchaevkirill.ru/public_html"'
+}
+# Один for на bash; внешние кавычки PowerShell'ом не разворачивают $ (см. одинарные вокруг $d, $HOME).
+$remoteCmd = 'for d in ' + $quoted + '; do mkdir -p "$d" && rm -rf "$d"/* && tar -xzf "$HOME/beget-out.tar.gz" -C "$d" && echo "unpacked: $d"; done; rm -f "$HOME/beget-out.tar.gz"'
 
 Write-Host "=== ssh распаковка public_html ==="
 & ssh -o BatchMode=yes -o IdentitiesOnly=yes $target $remoteCmd

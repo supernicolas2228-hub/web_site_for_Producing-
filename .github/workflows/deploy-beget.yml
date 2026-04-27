@@ -32,6 +32,7 @@ jobs:
       - name: Static export (BEGET_STATIC)
         env:
           NEXT_PUBLIC_SITE_URL: https://sanchaevkirill.ru
+          NEXT_PUBLIC_STATIC_EXPORT: "1"
           NEXT_PUBLIC_DEPLOY_REF: "ci-${{ github.run_id }} / ${{ github.sha }}"
         run: node scripts/build-beget-static.cjs
 
