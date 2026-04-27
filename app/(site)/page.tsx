@@ -1,5 +1,6 @@
 import { About } from "@/components/sections/About";
 import { CasesReviews } from "@/components/sections/CasesReviews";
+import { ContactSocial } from "@/components/sections/ContactSocial";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { ForWho } from "@/components/sections/ForWho";
 import { Hero } from "@/components/sections/Hero";
@@ -10,6 +11,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <ContactSocial />
       <About />
       <ForWho />
       <WhatIGive />

@@ -12,10 +12,9 @@ export const site = {
 } as const;
 
 export const hero = {
-  /** Первый экран + прелоадер: полный кадр (стратег/эксперт), не крупный план лица */
-  portraitSrc: "/images/kirill-hero-strategist.png",
-  /** Tailwind-классы для object-fit (см. Hero, SitePreloader) */
-  portraitCoverClass: "object-cover object-[center_48%_38%]",
+  /** Первый экран сразу после прелоадера: «Система, которая ведёт к доходу». Первое фото сюда — подмени `boxer-photo.jpg` в public/images при необходимости. */
+  portraitSrc: "/images/boxer-photo.jpg",
+  portraitCoverClass: "object-cover object-center sm:object-[center_32%]",
   portraitAlt: "Кирилл Санчаев",
   /** Фон первого экрана — картинка в public/images. */
   backdropSrc: "/images/hero-backdrop-castle.png",
@@ -30,6 +29,16 @@ export const hero = {
   ctaPrimary: "Записаться",
   ctaSecondary: "Тарифы",
   ctaHint: "Ниже — все форматы и цены в одном месте, плюс ответы на частые вопросы.",
+} as const;
+
+/** Сразу после Hero: фото «на связи» + соцсети. Второе фото — подмени `kirill-hero-strategist.png` в public/images при необходимости. */
+export const contactSection = {
+  id: "contact" as const,
+  title: "Связь и соцсети",
+  hint: "Пиши в удобный канал — отвечу, подскажу следующий шаг.",
+  portraitSrc: "/images/kirill-hero-strategist.png",
+  portraitCoverClass: "object-cover object-[center_22%] sm:object-[center_15%]",
+  portraitAlt: "Кирилл Санчаев — на связи",
 } as const;
 
 export const about = {
@@ -122,6 +131,8 @@ export const faq = {
   title: "Что чаще всего уточняют",
   contactTitle: "Связь и соцсети",
   contactHint: "Напиши в удобный канал — отвечу и подскажу следующий шаг.",
+  /** Каналы вынесены в отдельный блок #contact выше */
+  contactMovedNote: "Каналы и мессенджеры — в отдельном блоке «Связь и соцсети» выше на странице.",
   /** Кнопка в блоке FAQ (ведёт в Telegram, не форма записи) */
   telegramChannelCta: "Перейти в Telegram-канал",
   /** Мелким текстом под кнопками — не кричит, но объясняет блокировки */
@@ -196,6 +207,7 @@ export const pricing = {
 export const nav = {
   anchors: [
     { label: "Обо мне", href: "#about" },
+    { label: "Связь", href: "#contact" },
     { label: "Для кого", href: "#for-who" },
     { label: "Что даю", href: "#what-i-give" },
     { label: "Кейсы", href: "#cases" },
