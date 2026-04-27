@@ -75,8 +75,8 @@ if (!process.env.NEXT_PUBLIC_DEPLOY_REF) {
   process.env.NEXT_PUBLIC_DEPLOY_REF = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 if (!process.env.NODE_OPTIONS) {
-  /* 4096: на ПК с малым RAM 8192 + webpack workers давали OOM. */
-  process.env.NODE_OPTIONS = "--max-old-space-size=4096";
+  /* Статик-экспорт на Windows: воркерам Next нужен запас; 8192 + webpackBuildWorker: false в next.config. */
+  process.env.NODE_OPTIONS = "--max-old-space-size=8192";
 }
 
 const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
