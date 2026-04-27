@@ -8,20 +8,28 @@ import { shouldSkipHeavyPreloader } from "@/lib/preloader-skip";
 
 const SESSION_KEY = "ks_preloader_done_v8";
 
-/** Слова разлетаются от имени (как на simonprod.ru: акцент на успех / деньги). */
-const FX_WORDS = [
-  "УСПЕХ",
-  "ДЕНЬГИ",
-  "УСПЕХ",
-  "ДЕНЬГИ",
-  "ДОХОД",
-  "РЕЗУЛЬТАТ",
-  "РОСТ",
-  "ПОБЕДА",
-  "УСПЕХ",
-  "ДЕНЬГИ",
-  "ДОХОД",
-  "УСПЕХ",
+/** Слова + «купюры» ($ € 💵 💶) — всё разлетается из центра одной волной. */
+type FxBurstItem =
+  | { kind: "word"; text: string; emphasize?: boolean }
+  | { kind: "money"; text: string };
+
+const FX_BURST: readonly FxBurstItem[] = [
+  { kind: "word", text: "УСПЕХ", emphasize: true },
+  { kind: "money", text: "💵" },
+  { kind: "word", text: "ДЕНЬГИ", emphasize: true },
+  { kind: "money", text: "💶" },
+  { kind: "word", text: "ДОХОД" },
+  { kind: "money", text: "💰" },
+  { kind: "word", text: "УСПЕХ", emphasize: true },
+  { kind: "money", text: "$" },
+  { kind: "word", text: "РЕЗУЛЬТАТ" },
+  { kind: "money", text: "€" },
+  { kind: "word", text: "РОСТ" },
+  { kind: "money", text: "💸" },
+  { kind: "word", text: "ПОБЕДА" },
+  { kind: "money", text: "💵" },
+  { kind: "word", text: "ДЕНЬГИ", emphasize: true },
+  { kind: "money", text: "💶" },
 ] as const;
 
 /** Жёсткий потолок: на медленном VPN / прокси GSAP не должен держать экран бесконечно. */
@@ -329,18 +337,33 @@ export function SitePreloader() {
           className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[min(78vmin,560px)] w-[min(94vw,620px)] -translate-x-1/2 -translate-y-1/2"
           aria-hidden
         >
-          {FX_WORDS.map((word, i) => {
-            const emphasize = word === "УСПЕХ" || word === "ДЕНЬГИ";
+          {FX_BURST.map((item, i) => {
+            if (item.kind === "money") {
+              const isGlyph = item.text === "$" || item.text === "€";
+              return (
+                <span
+                  key={`${item.text}-${i}`}
+                  className={`pre-fx absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 leading-none select-none ${
+                    isGlyph
+                      ? "font-display text-[clamp(17px,4.8vmin,30px)] font-black text-amber-200 [text-shadow:0_0_22px_rgb(251_191_36/0.55),0_0_40px_rgb(234_179_8/0.25)]"
+                      : "text-[clamp(19px,5.2vmin,36px)] [filter:drop-shadow(0_0_14px_rgb(251_191_36/0.45))]"
+                  }`}
+                >
+                  {item.text}
+                </span>
+              );
+            }
+            const emphasize = Boolean(item.emphasize);
             return (
               <span
-                key={`${word}-${i}`}
+                key={`${item.text}-${i}`}
                 className={`pre-fx font-display absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-extrabold uppercase leading-none tracking-[0.14em] sm:tracking-[0.18em] ${
                   emphasize
                     ? "text-[clamp(13px,3.6vmin,22px)] text-emerald-300 [text-shadow:0_0_24px_rgb(52_211_153/0.55)]"
                     : "text-[clamp(11px,3vmin,17px)] text-zinc-400/95 [text-shadow:0_0_16px_rgba(255,255,255,0.12)]"
                 }`}
               >
-                {word}
+                {item.text}
               </span>
             );
           })}
