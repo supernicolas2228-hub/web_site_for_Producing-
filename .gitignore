@@ -47,3 +47,4 @@ next-env.d.ts
 beget-upload*.zip
 beget-out.tar.gz
 *.tsbuildinfo
+build-log.txt

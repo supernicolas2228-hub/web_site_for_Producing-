@@ -1,4 +1,4 @@
-# Сборка статики (out/) и выкладка на Beget по SSH — как в .github/workflows/deploy-beget.yml
+# Сборка статики (out/) и выкладка на Beget по SSH (основной способ; CI для Beget отключён).
 # Локально: задайте в сессии или в .env (не коммитьте пароли):
 #   BEGET_SSH="user@host"  ИЛИ  BEGET_SSH_USER + BEGET_SSH_HOST
 # Опционально: NEXT_PUBLIC_DEPLOY_REF для метки в подвале
