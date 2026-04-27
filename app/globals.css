@@ -323,26 +323,75 @@ html.dark ::selection {
     text-transform: uppercase;
   }
 
-  /**
-   * Опциональное едва заметное свечение CTA (по умолчанию класс почти не используется).
-   */
+  /** Primary CTA: мягкое «дыхание» — свечение + кольцо (::before), без transform на самой кнопке. */
   .cta-attention {
-    animation: cta-attention-glow 5.5s ease-in-out infinite;
+    isolation: isolate;
+    animation: cta-attention-glow 2.35s ease-in-out infinite;
+  }
+
+  .cta-attention::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    z-index: -1;
+    border-radius: 9999px;
+    border: 2px solid rgb(var(--accent-rgb) / 0.35);
+    opacity: 0;
+    pointer-events: none;
+    animation: cta-attention-ring 2.35s ease-in-out infinite;
   }
 
   @keyframes cta-attention-glow {
     0%,
     100% {
-      filter: drop-shadow(0 0 0 rgb(var(--accent-rgb) / 0)) brightness(1);
+      filter: drop-shadow(0 6px 22px rgb(4 120 72 / 0.28)) brightness(1);
     }
     50% {
-      filter: drop-shadow(0 0 8px rgb(var(--accent-rgb) / 0.18)) brightness(1.02);
+      filter: drop-shadow(0 14px 40px rgb(52 211 153 / 0.42)) brightness(1.06);
+    }
+  }
+
+  @keyframes cta-attention-ring {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.03);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cta-attention {
+    .cta-attention,
+    .cta-attention::before {
       animation: none;
+    }
+    .cta-social-invite {
+      animation: none;
+    }
+  }
+
+  /** Карточки соцсетей в блоке связи — то же дыхание без конфликта с авто-layout */
+  .cta-social-invite {
+    animation: cta-social-invite 2.45s ease-in-out infinite;
+  }
+
+  @keyframes cta-social-invite {
+    0%,
+    100% {
+      border-color: rgb(var(--accent-rgb) / 0.18);
+      box-shadow:
+        var(--shadow-plate),
+        0 0 0 0 rgb(var(--accent-rgb) / 0);
+    }
+    50% {
+      border-color: rgb(var(--accent-rgb) / 0.42);
+      box-shadow:
+        var(--shadow-plate),
+        0 8px 26px -10px rgb(4 120 72 / 0.28),
+        0 0 0 1px rgb(var(--accent-rgb) / 0.2);
     }
   }
 
@@ -351,11 +400,11 @@ html.dark ::selection {
     position: relative;
     isolation: isolate;
   }
-  .reviews-telegram-cta::before {
+  .reviews-telegram-cta::after {
     content: "";
     position: absolute;
     inset: -1px;
-    z-index: -1;
+    z-index: -2;
     border-radius: 9999px;
     opacity: 0;
     transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
@@ -367,7 +416,7 @@ html.dark ::selection {
       rgb(4 120 72 / 0.12)
     );
   }
-  html.dark .reviews-telegram-cta::before {
+  html.dark .reviews-telegram-cta::after {
     background: linear-gradient(
       125deg,
       rgb(52 211 153 / 0.28),
@@ -375,12 +424,12 @@ html.dark ::selection {
       rgb(16 185 129 / 0.12)
     );
   }
-  .reviews-telegram-cta:hover::before,
-  .reviews-telegram-cta:focus-visible::before {
+  .reviews-telegram-cta:hover::after,
+  .reviews-telegram-cta:focus-visible::after {
     opacity: 1;
   }
   @media (prefers-reduced-motion: reduce) {
-    .reviews-telegram-cta::before {
+    .reviews-telegram-cta::after {
       transition: none;
     }
   }

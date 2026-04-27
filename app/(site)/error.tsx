@@ -23,7 +23,7 @@ export default function SiteError({
         Произошла внутренняя ошибка. Попробуйте обновить страницу. Если сообщение повторяется,
         напишите нам.
       </p>
-      <Button type="button" variant="primary" onClick={() => reset()}>
+      <Button type="button" variant="primary" attention={false} onClick={() => reset()}>
         Попробовать снова
       </Button>
     </div>

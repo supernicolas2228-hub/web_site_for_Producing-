@@ -79,7 +79,7 @@ export function ContactSocial() {
                       target={base.target}
                       rel={base.rel}
                       variants={fadeUp}
-                      className="group flex min-h-[48px] items-center justify-between gap-3 rounded-2xl border border-stroke/20 bg-white/60 px-4 py-3 text-left shadow-plate transition hover:border-accent/35 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1]"
+                      className="cta-social-invite group flex min-h-[48px] items-center justify-between gap-3 rounded-2xl border border-stroke/20 bg-white/60 px-4 py-3 text-left shadow-plate transition hover:border-accent/35 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1]"
                     >
                       <div>
                         <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-zinc-900 dark:text-zinc-100">

@@ -208,7 +208,6 @@ export function Pricing() {
                   <AnchorButton
                     {...joinCta}
                     variant="primary"
-                    attention
                     className="mt-8 w-full !justify-center"
                     onClick={chainOnClick(joinCta.onClick, () =>
                       void track("click_pricing", { plan: plan.id, period: plan.period })
@@ -220,7 +219,6 @@ export function Pricing() {
                   <Button
                     type="button"
                     variant="primary"
-                    attention
                     className="mt-8 w-full !justify-center"
                     onClick={() => {
                       void track("click_pricing", { plan: plan.id, period: plan.period, via: "starter_pack" });

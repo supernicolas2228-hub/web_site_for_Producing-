@@ -8,10 +8,6 @@ import { easeFloat, easePremium, fadeUp, staggerSnappy } from "@/lib/motion";
 export function Footer() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-8%" });
-  const deployRef =
-    process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ??
-    process.env.NEXT_PUBLIC_DEPLOY_REF?.trim() ??
-    null;
 
   return (
     <footer
@@ -59,15 +55,6 @@ export function Footer() {
           >
             {site.copyright}
           </motion.p>
-
-          {deployRef ? (
-            <motion.p
-              variants={fadeUp}
-              className="font-mono text-[10px] tracking-tight text-zinc-700 dark:text-zinc-300"
-            >
-              Сборка: {deployRef}
-            </motion.p>
-          ) : null}
         </motion.div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 
-const SESSION_KEY = "ks_preloader_done_v5";
+const SESSION_KEY = "ks_preloader_done_v6";
 const FX_WORDS = [
   "УСПЕХ",
   "ДЕНЬГИ",
@@ -13,7 +13,7 @@ const FX_WORDS = [
   "РЕЗУЛЬТАТ",
   "РОСТ",
 ] as const;
-const MAX_MS = 5600;
+const MAX_MS = 4800;
 const DOLLAR_MARKS = 12;
 
 /** Показать сцену снова: открой главную с `?replayLoader` (например для проверки после деплоя). */
@@ -167,119 +167,67 @@ export function SitePreloader() {
         return { x: Math.cos(angle) * r, y: Math.sin(angle) * r - 28, rot: 120 + Math.random() * 240 };
       };
 
-      const fistBackX = isNarrow ? -56 : -88;
-      const fistContactX = isNarrow ? 26 : 36;
+      const fistBackX = isNarrow ? -52 : -82;
+      const fistContactX = isNarrow ? 22 : 34;
 
-      gsap.set(vfxArr, { x: 0, y: 0, scale: 0.75, opacity: 1, rotation: 0, transformOrigin: "50% 50%" });
+      gsap.set(vfxArr, { x: 0, y: 0, scale: 0.78, opacity: 1, rotation: 0, transformOrigin: "50% 50%" });
       gsap.set(fist, {
         x: fistBackX,
-        y: 6,
+        y: 4,
         scale: 1,
-        rotation: -4,
-        transformOrigin: "10% 90%",
+        rotation: -3,
+        transformOrigin: "12% 88%",
       });
-      gsap.set(boxer, { transformOrigin: "42% 92%", rotation: 0, x: 0, y: 0 });
-      gsap.set(bag, { transformOrigin: "50% 2px", rotation: 0, x: 0, y: 0, scale: 1 });
+      gsap.set(boxer, { transformOrigin: "44% 94%", rotation: 0, x: 0, y: 0 });
+      gsap.set(bag, { transformOrigin: "50% 4px", rotation: 0, x: 0, y: 0, scale: 1 });
       gsap.set([box], { transformOrigin: "50% 50%" });
       gsap.set(root, { autoAlpha: 1 });
 
       const tl = gsap.timeline();
-      tl.fromTo(
-        box,
-        { autoAlpha: 0, y: 18 },
-        { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }
-      )
-        /* груша до удара: раскачивание, не статика */
-        .to(
-          bag,
-          { rotation: 5, duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" },
-          0.06
-        )
-        .addLabel("windup", ">-0.02")
-        .to(
-          boxer,
-          { rotation: isNarrow ? -6 : -8, x: isNarrow ? -4 : -8, duration: 0.22, ease: "power2.in" },
-          "windup"
-        )
-        .to(
-          fist,
-          { x: fistBackX - (isNarrow ? 4 : 10), y: 10, rotation: 2, duration: 0.2, ease: "sine.inOut" },
-          "windup"
-        )
-        .addLabel("punch", ">0.02")
+      tl.fromTo(box, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.32, ease: "power2.out" })
+        .to(bag, { rotation: 4, duration: 0.48, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.04)
+        .to(boxer, { rotation: -6, x: -5, duration: 0.18, ease: "power2.in" }, ">0.06")
+        .to(fist, { x: fistBackX - 8, y: 9, rotation: 5, duration: 0.16, ease: "sine.inOut" }, "<")
+        .addLabel("hit")
         .to(
           fist,
           {
             x: fistContactX,
-            y: -2,
-            rotation: isNarrow ? -10 : -12,
-            scale: 1.12,
+            y: -1,
+            rotation: -9,
+            scale: 1.06,
             duration: 0.1,
-            ease: "power4.in",
-          },
-          "punch"
-        )
-        .to(
-          boxer,
-          { rotation: isNarrow ? 5 : 7, x: isNarrow ? 8 : 14, duration: 0.1, ease: "power2.in" },
-          "punch+=0.02"
-        )
-        .addLabel("hit", "punch+=0.09")
-        .to(
-          bag,
-          {
-            rotation: isNarrow ? 18 : 22,
-            x: isNarrow ? 8 : 12,
-            y: 4,
-            scaleX: 0.96,
-            scaleY: 1.04,
-            duration: 0.06,
-            ease: "power1.in",
+            ease: "power3.in",
           },
           "hit"
         )
+        .to(boxer, { rotation: 5, x: 8, duration: 0.11, ease: "power2.out" }, "hit+=0.02")
         .to(
           bag,
-          { scaleX: 1, scaleY: 1, duration: 0.12, ease: "sine.out" },
-          "hit+=0.06"
+          {
+            rotation: 12,
+            x: 7,
+            y: 3,
+            duration: 0.09,
+            ease: "power2.out",
+          },
+          "hit+=0.07"
         )
-        .to(
-          bag,
-          { rotation: -11, x: 4, duration: 0.14, ease: "sine.inOut" },
-          "hit+=0.1"
-        )
-        .to(
-          bag,
-          { rotation: 6, x: 2, duration: 0.16, ease: "sine.inOut" },
-          "hit+=0.2"
-        )
-        .to(
-          bag,
-          { rotation: -2.5, x: 0, y: 0, duration: 0.2, ease: "sine.inOut" },
-          "hit+=0.3"
-        )
-        .to(
-          bag,
-          { rotation: 0, duration: 0.35, ease: "sine.out" },
-          "hit+=0.45"
-        )
+        .to(bag, { rotation: -5, x: 2, duration: 0.18, ease: "sine.out" }, "hit+=0.12")
+        .to(bag, { rotation: 0, x: 0, y: 0, duration: 0.35, ease: "elastic.out(1.15, 0.65)" }, "hit+=0.14")
         .to(
           fist,
           {
-            x: isNarrow ? -18 : -28,
+            x: isNarrow ? -20 : -30,
             y: 4,
             rotation: 0,
             scale: 1,
-            duration: 0.28,
+            duration: 0.32,
             ease: "power2.out",
           },
-          "hit+=0.12"
-        )
-        .to(
-          boxer,
-          { rotation: 0, x: 0, y: 0, duration: 0.4, ease: "sine.inOut" },
           "hit+=0.1"
-        );
+        )
+        .to(boxer, { rotation: 0, x: 0, duration: 0.34, ease: "sine.out" }, "hit+=0.12");
 
       vfxArr.forEach((el, i) => {
         const b = burst(i);
@@ -298,9 +246,9 @@ export function SitePreloader() {
         );
       });
 
-      tl.to({}, { duration: 0.72 }).to(root, {
+      tl.to({}, { duration: 0.55 }).to(root, {
         autoAlpha: 0,
-        duration: 0.52,
+        duration: 0.48,
         ease: "power2.inOut",
         onComplete: () => {
           window.clearTimeout(safetyRef.current);

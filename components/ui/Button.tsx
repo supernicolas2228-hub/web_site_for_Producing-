@@ -7,7 +7,7 @@ import { springHover } from "@/lib/motion";
 type Variant = "primary" | "secondary" | "ghost";
 
 const base =
-  "inline-flex min-h-[48px] items-center justify-center rounded-full border px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none sm:min-h-[52px] sm:px-7";
+  "relative overflow-visible inline-flex min-h-[48px] items-center justify-center rounded-full border px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none sm:min-h-[52px] sm:px-7";
 
 const attentionCls = "cta-attention motion-reduce:animate-none";
 
@@ -32,16 +32,17 @@ function useMicroMotion() {
 export function Button({
   variant = "primary",
   className = "",
-  attention = false,
+  attention,
   children,
   ...props
 }: ComponentProps<typeof motion.button> & { variant?: Variant; attention?: boolean }) {
   const { hover, tap } = useMicroMotion();
+  const pulse = attention ?? variant === "primary";
   return (
     <motion.button
       whileHover={hover}
       whileTap={tap}
-      className={`${base} ${variants[variant]} ${attention ? attentionCls : ""} ${className}`}
+      className={`${base} ${variants[variant]} ${pulse ? attentionCls : ""} ${className}`}
       {...props}
     >
       {children}
@@ -52,16 +53,17 @@ export function Button({
 export function AnchorButton({
   variant = "primary",
   className = "",
-  attention = false,
+  attention,
   children,
   ...props
 }: ComponentProps<typeof motion.a> & { variant?: Variant; attention?: boolean }) {
   const { hover, tap } = useMicroMotion();
+  const pulse = attention ?? variant === "primary";
   return (
     <motion.a
       whileHover={hover}
       whileTap={tap}
-      className={`${base} ${variants[variant]} ${attention ? attentionCls : ""} ${className}`}
+      className={`${base} ${variants[variant]} ${pulse ? attentionCls : ""} ${className}`}
       {...props}
     >
       {children}

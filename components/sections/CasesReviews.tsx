@@ -254,6 +254,7 @@ export function CasesReviews() {
               <AnchorButton
                 {...moreTg}
                 variant="secondary"
+                attention
                 className="reviews-telegram-cta group/rel w-full min-h-[46px] !justify-center gap-2.5 !px-6 !py-2.5 !text-xs sm:w-auto sm:!min-h-[52px] sm:!px-7 sm:!py-3 sm:!text-sm"
               >
                 <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/15 text-emerald-800 transition-all duration-300 group-hover/rel:scale-110 group-hover/rel:bg-emerald-500/25 group-hover/rel:text-emerald-950 dark:bg-emerald-400/12 dark:text-emerald-200 dark:group-hover/rel:bg-emerald-400/22 dark:group-hover/rel:text-white">
