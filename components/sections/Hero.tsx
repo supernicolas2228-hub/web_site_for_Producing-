@@ -11,13 +11,49 @@ import { easeFloat, easePremium, fadeUp, spring, staggerSnappy } from "@/lib/mot
 import { track } from "@/lib/track";
 
 const titleCls =
-  "font-display text-[clamp(1.9rem,5.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-zinc-950 sm:leading-[1.01] dark:text-zinc-100";
+  "font-display text-[clamp(1.9rem,5.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[0.01em] text-zinc-950 sm:leading-[1.01] dark:text-zinc-100";
 
 const subtitleCls =
   "mt-3 max-w-lg text-pretty text-[13px] font-medium leading-[1.65] text-zinc-900 sm:mt-4 sm:text-[14px] dark:text-zinc-100";
 
 const hasHeroKicker = hero.kicker.trim().length > 0;
 const hasPullQuote = hero.pullQuote.trim().length > 0;
+
+function TypewriterLine({
+  text,
+  enabled,
+  speedMs = 22,
+}: {
+  text: string;
+  enabled: boolean;
+  speedMs?: number;
+}) {
+  const [typed, setTyped] = useState(enabled ? "" : text);
+
+  useEffect(() => {
+    if (!enabled) {
+      setTyped(text);
+      return;
+    }
+    setTyped("");
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setTyped(text.slice(0, i));
+      if (i >= text.length) window.clearInterval(id);
+    }, speedMs);
+    return () => window.clearInterval(id);
+  }, [enabled, speedMs, text]);
+
+  return (
+    <span>
+      {typed}
+      {enabled && typed.length < text.length ? (
+        <span className="ml-0.5 inline-block h-[1em] w-[1px] animate-typewriter-caret align-[-0.12em] bg-current opacity-80" />
+      ) : null}
+    </span>
+  );
+}
 
 function HeroPortrait({
   animateFloat,
@@ -134,7 +170,7 @@ export function Hero() {
               ) : null}
 
               <motion.h1 variants={fadeUp} className={titleCls}>
-                {hero.title}
+                <TypewriterLine text={hero.title} enabled={heroClient && !reduceMotion} speedMs={28} />
               </motion.h1>
 
               <motion.p variants={fadeUp} className={subtitleCls}>

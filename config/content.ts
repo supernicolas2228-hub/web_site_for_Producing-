@@ -17,10 +17,10 @@ export const hero = {
   portraitCoverClass: "object-cover object-[center_42%] sm:object-[center_38%]",
   portraitAlt: "Кирилл Санчаев",
   /** Фон первого экрана — картинка в public/images. */
-  backdropSrc: "/images/hero-backdrop-castle.png",
+  backdropSrc: "/images/hero-backdrop-castle-new.png",
   kicker: "",
   marqueePhrases: [
-    "Стратегическая сессия — 0 ₽ · Консультация · Личная работа · Система и доход ·",
+    "Стратегическая сессия · Консультация · Личная работа · Система и доход ·",
   ] as const,
   title: "Система, которая ведёт к доходу",
   subtitle:
@@ -53,7 +53,7 @@ export const about = {
   /** Акценты для блока «цифр» (без смены цен и смысла текстов) */
   stats: [
     { value: "15", label: "лет" },
-    { value: "0 ₽", label: "первая сессия" },
+    { value: "2000 $", label: "в месяц доход" },
     { value: "3", label: "формата работы" },
   ] as const,
   intro: [

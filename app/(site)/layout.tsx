@@ -2,7 +2,6 @@ import { AnchorSmoothScroll } from "@/components/AnchorSmoothScroll";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { SiteBackdrop } from "@/components/SiteBackdrop";
-import { SitePreloader } from "@/components/SitePreloader";
 import { StarterPackProvider } from "@/components/starter-pack/StarterPackProvider";
 import { TrackingProvider } from "@/components/TrackingProvider";
 
@@ -17,8 +16,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <main className="relative overflow-x-clip">{children}</main>
         <Footer />
       </div>
-      {/* Порядок в разметке: прелоадер последним, плюс портал в body — иначе Hero-картинка визуально накрывает сцену */}
-      <SitePreloader />
     </StarterPackProvider>
   );
 }
