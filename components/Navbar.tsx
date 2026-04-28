@@ -104,18 +104,38 @@ export function Navbar() {
               {nav.productLabel}
             </motion.a>
           ) : null}
-          <div className="hidden lg:block">
+          <motion.div
+            className="relative"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
+            animate={
+              mounted
+                ? reduceMotion
+                  ? { opacity: 1, scale: 1 }
+                  : {
+                      opacity: [1, 0.82, 1],
+                      scale: [1, 1.06, 1],
+                      boxShadow: [
+                        "0 0 0 0 rgba(244,63,94,0.0)",
+                        "0 0 0 10px rgba(244,63,94,0.18)",
+                        "0 0 0 0 rgba(244,63,94,0.0)",
+                      ],
+                    }
+                : {}
+            }
+            transition={reduceMotion ? spring.navDrawer : { duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+          >
             <Button
               type="button"
               onClick={() => {
                 void track("click_starter_pack", { from: "navbar" });
                 starterPack.open("navbar");
               }}
-              className="!min-h-[44px] !px-5 !py-2 !text-xs"
+              className="!min-h-[44px] !px-3 !py-2 !text-[11px] !tracking-[0.08em] sm:!px-5 sm:!text-xs !bg-gradient-to-r !from-rose-600 !via-red-500 !to-amber-500 !text-white !border-0"
             >
-              {nav.cta}
+              <span className="sm:hidden">Подарок</span>
+              <span className="hidden sm:inline">{nav.cta}</span>
             </Button>
-          </div>
+          </motion.div>
           <button
             type="button"
             className="inline-flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full border border-stroke/20 bg-white/55 text-zinc-900 shadow-plate backdrop-blur-xl lg:hidden dark:border-white/12 dark:bg-white/5 dark:text-white"
