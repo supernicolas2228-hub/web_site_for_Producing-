@@ -171,16 +171,16 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
                 >
             <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-stroke/15 bg-page/90 px-5 py-4 backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/90 sm:px-6">
               <div>
-                <p className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent">Заявка</p>
+                <p className="font-display text-[10px] font-bold uppercase tracking-[0.28em] text-accent">Подарок</p>
                 <h2
                   id={`${idPrefix}-title`}
                   className="mt-1 font-display text-xl uppercase leading-tight text-zinc-900 dark:text-zinc-100"
                 >
-                  Несколько вопросов перед контактом
+                  Получите подарок: бесплатная сессия
                 </h2>
                 <p className="mt-1 text-xs font-medium leading-relaxed text-zinc-800 dark:text-zinc-200">
-                  Это быстрый бриф перед первым контактом. Внешняя отправка пока отключена: ответы сохраняются
-                  локально и попадают в аналитику сайта.
+                  Заполните короткую анкету, чтобы получить подарок и записаться на бесплатную сессию.
+                  Внешняя отправка пока отключена: ответы сохраняются локально и попадают в аналитику сайта.
                 </p>
               </div>
               <button
@@ -337,9 +337,9 @@ export function StarterPackModal({ open, onClose, source = "unknown" }: Props) {
                 <p className="font-display text-4xl text-accent" aria-hidden>
                   ✓
                 </p>
-                <p className="mt-4 font-display text-lg uppercase text-zinc-900 dark:text-zinc-100">Спасибо!</p>
+                <p className="mt-4 font-display text-lg uppercase text-zinc-900 dark:text-zinc-100">Подарок зафиксирован!</p>
                 <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-900 dark:text-zinc-100">
-                  Запрос сохранён. Позже его можно будет подключить к CRM или почте, а сейчас данные уже есть в
+                  Анкета сохранена. Позже её можно будет подключить к CRM или почте, а сейчас данные уже есть в
                   статистике и в{" "}
                   <code className="text-xs">localStorage</code> браузера.
                 </p>
