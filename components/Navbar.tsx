@@ -114,11 +114,6 @@ export function Navbar() {
                   : {
                       opacity: [1, 0.82, 1],
                       scale: [1, 1.06, 1],
-                      boxShadow: [
-                        "0 0 0 0 rgba(244,63,94,0.0)",
-                        "0 0 0 10px rgba(244,63,94,0.18)",
-                        "0 0 0 0 rgba(244,63,94,0.0)",
-                      ],
                     }
                 : {}
             }
@@ -130,7 +125,7 @@ export function Navbar() {
                 void track("click_starter_pack", { from: "navbar" });
                 starterPack.open("navbar");
               }}
-              className="!min-h-[44px] !px-3 !py-2 !text-[11px] !tracking-[0.08em] sm:!px-5 sm:!text-xs !bg-gradient-to-r !from-rose-600 !via-red-500 !to-amber-500 !text-white !border-0"
+              className="!min-h-[44px] !px-3 !py-2 !text-[11px] !tracking-[0.08em] sm:!px-5 sm:!text-xs !bg-gradient-to-r !from-emerald-600 !via-accent !to-emerald-500 !text-white !border-0 !shadow-lg !shadow-accent/40"
             >
               <span className="sm:hidden">Подарок</span>
               <span className="hidden sm:inline">{nav.cta}</span>
