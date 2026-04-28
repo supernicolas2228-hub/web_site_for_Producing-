@@ -53,7 +53,7 @@ export const about = {
   /** Акценты для блока «цифр» (без смены цен и смысла текстов) */
   stats: [
     { value: "15", label: "лет" },
-    { value: "2000 $", label: "в месяц доход" },
+    { value: "2000 $", label: "доход в месяц" },
     { value: "3", label: "формата работы" },
   ] as const,
   intro: [
